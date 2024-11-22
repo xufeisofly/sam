@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import json
 
 from schemas.process_result import ProcessResult, ProcessResultItem
 from util.constant import OUTPUT_DIR
@@ -31,6 +32,13 @@ class OutputService():
         for folder in [self._train_ann_dir, self._val_ann_dir, self._train_img_dir, self._val_img_dir]:
             for f in os.listdir(folder):
                 os.remove(os.path.join(folder, f))
+
+
+    def call(self, data: ProcessResult, ori_label_2_id_map: dict):
+        self.clear_all_images()
+        train_result, val_result = self.seperate_train_and_val_result(data)
+        self.save_to_ann_dir(train_result, val_result)
+        self.save_type_map(ori_label_2_id_map)
 
     def seperate_train_and_val_result(self, result: ProcessResult) -> Tuple[ProcessResult, ProcessResult]:
         """将 result 按比例分为训练集和验证集
@@ -76,6 +84,10 @@ class OutputService():
             self._save_result_item_tif(result_item, self._train_ann_dir)
         for result_item in val_result:
             self._save_result_item_tif(result_item, self._val_ann_dir)
+
+    def save_type_map(self, ori_label_2_id_map: dict):
+        with open(os.path.join(self._output_dir, 'type_map.json'), 'w') as f:
+            json.dump(ori_label_2_id_map, f)
         
     def _save_result_item_tif(self, result_item: ProcessResultItem, dir):
         image = Image.fromarray(result_item.mask.data)

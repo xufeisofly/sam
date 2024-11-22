@@ -10,7 +10,7 @@ class BasePreprocessService(ABC):
         pass
 
     @abstractmethod
-    def ori_label_2_id(self, label: str) -> int:
+    def ori_label_2_id_map(self, label: str) -> int:
         pass
         
 

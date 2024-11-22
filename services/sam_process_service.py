@@ -13,8 +13,8 @@ from util.constant import CHECKPOINT_DIR
 
 
 class SamProcessService():
-    def __init__(self, ori_label_2_id_fn) -> None:
-        self._ori_label_2_id_fn = ori_label_2_id_fn
+    def __init__(self, ori_label_2_id_map: dict) -> None:
+        self._ori_label_2_id_map = ori_label_2_id_map
 
     def call(self, data: PreprocessResult) -> ProcessResult:
         result = ProcessResult()
@@ -42,7 +42,7 @@ class SamProcessService():
             if mask_arrs is None or len(mask_arrs) == 0:
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
-            id = self._ori_label_2_id_fn(box_item.ori_label)
+            id = self._ori_label_2_id_map[box_item.ori_label]
             print(id, box_item.ori_label)
             if mask is None:
                 mask = Mask(item.img_file_path, mask_arr, id)

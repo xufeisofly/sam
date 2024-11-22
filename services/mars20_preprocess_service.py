@@ -39,8 +39,8 @@ class Mars20PreprocessService(BasePreprocessService):
 
         return result    
 
-    def ori_label_2_id(self, ori_label: str) -> int:
-        ori2id = {
+    def ori_label_2_id_map(self) -> int:
+        return {
             'SU-35': 255,
             'C-130': 254,
             'C-17': 253,
@@ -62,7 +62,6 @@ class Mars20PreprocessService(BasePreprocessService):
             'SU-34': 236,
             'SU-24': 235,
         }
-        return ori2id[ori_label]
     
 
     def _get_ori_label_by_token(self, label_token: str) -> str:
