@@ -73,11 +73,13 @@ class SamProcessService():
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
             id = self._ori_label_2_id_map[box_item.ori_label]
+            # 设置 box 对应的 id
+            box_item.set_id(id)
             print(id, box_item.ori_label)
             if mask is None:
-                mask = Mask(item.img_file_path, mask_arr, id)
+                mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
             else:
-                mask.update(Mask(item.img_file_path, mask_arr, id))
+                mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
 
         return ProcessResultItem(img_file_path=item.img_file_path, mask=mask)
 

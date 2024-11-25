@@ -49,6 +49,71 @@
         "documentation": {}
     },
     {
+        "label": "DataType",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "DataType",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "ORIGIN_DATA_DIR",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "DataType",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "OUTPUT_DIR",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "DataType",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "CHECKPOINT_DIR",
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "isExtraImport": true,
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
+        "label": "__future__",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "__future__",
+        "description": "__future__",
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
         "label": "annotations",
         "importPath": "__future__",
         "description": "__future__",
@@ -57,19 +122,11 @@
         "documentation": {}
     },
     {
-        "label": "ABC",
-        "importPath": "abc",
-        "description": "abc",
+        "label": "BoxItem",
+        "importPath": "schemas.preprocess_result",
+        "description": "schemas.preprocess_result",
         "isExtraImport": true,
-        "detail": "abc",
-        "documentation": {}
-    },
-    {
-        "label": "abstractmethod",
-        "importPath": "abc",
-        "description": "abc",
-        "isExtraImport": true,
-        "detail": "abc",
+        "detail": "schemas.preprocess_result",
         "documentation": {}
     },
     {
@@ -121,6 +178,22 @@
         "documentation": {}
     },
     {
+        "label": "ABC",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "abstractmethod",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -143,30 +216,6 @@
         "description": "services.base_preprocess_service",
         "isExtraImport": true,
         "detail": "services.base_preprocess_service",
-        "documentation": {}
-    },
-    {
-        "label": "ORIGIN_DATA_DIR",
-        "importPath": "util.constant",
-        "description": "util.constant",
-        "isExtraImport": true,
-        "detail": "util.constant",
-        "documentation": {}
-    },
-    {
-        "label": "OUTPUT_DIR",
-        "importPath": "util.constant",
-        "description": "util.constant",
-        "isExtraImport": true,
-        "detail": "util.constant",
-        "documentation": {}
-    },
-    {
-        "label": "CHECKPOINT_DIR",
-        "importPath": "util.constant",
-        "description": "util.constant",
-        "isExtraImport": true,
-        "detail": "util.constant",
         "documentation": {}
     },
     {
@@ -286,6 +335,14 @@
         "documentation": {}
     },
     {
+        "label": "Enum",
+        "importPath": "enum",
+        "description": "enum",
+        "isExtraImport": true,
+        "detail": "enum",
+        "documentation": {}
+    },
+    {
         "label": "SamProcessService",
         "importPath": "services.sam_process_service",
         "description": "services.sam_process_service",
@@ -322,7 +379,7 @@
         "kind": 6,
         "importPath": "schemas.preprocess_result",
         "description": "schemas.preprocess_result",
-        "peekOfCode": "class BoxItem():\n    def __init__(self, ori_label: str, box_array: np.array) -> None:\n        self._ori_label = ori_label\n        self._box_array = box_array\n    @property\n    def ori_label(self):\n        return self._ori_label\n    @property\n    def box_array(self):\n        return self._box_array",
+        "peekOfCode": "class BoxItem():\n    def __init__(self, ori_label: str, box_array: np.array) -> None:\n        self._ori_label = ori_label\n        self._box_array = box_array\n        self._id = None\n    @property\n    def ori_label(self):\n        return self._ori_label\n    @property\n    def box_array(self):",
         "detail": "schemas.preprocess_result",
         "documentation": {}
     },
@@ -331,7 +388,7 @@
         "kind": 6,
         "importPath": "schemas.preprocess_result",
         "description": "schemas.preprocess_result",
-        "peekOfCode": "class PreprocessResultItem():\n    def __init__(self, img_file_path: str, box_items: List[BoxItem] = None) -> None:\n        self._img_file_path = img_file_path\n        self._box_items = box_items if box_items is not None else []\n    def append(self, item: BoxItem):\n        self._box_items.append(item)\n    @property\n    def img_file_path(self):\n        return self._img_file_path\n    @property",
+        "peekOfCode": "class PreprocessResultItem():\n    def __init__(self, img_file_path: str, box_items: List[BoxItem] = None, data_type: DataType=DataType.TRAIN) -> None:\n        self._img_file_path = img_file_path\n        self._box_items = box_items if box_items is not None else []\n        self._data_type = data_type\n    def append(self, item: BoxItem):\n        self._box_items.append(item)\n    @property\n    def img_file_path(self):\n        return self._img_file_path",
         "detail": "schemas.preprocess_result",
         "documentation": {}
     },
@@ -349,7 +406,7 @@
         "kind": 6,
         "importPath": "schemas.process_result",
         "description": "schemas.process_result",
-        "peekOfCode": "class Mask():\n    def __init__(self, img_file_path: str, data: np.ndarray, id: int) -> None:\n        \"\"\"\n        data: np.array([], dtype=np.boolean)\n        \"\"\"\n        if data.ndim != 2:\n            raise ValueError(\"data must be a 2D numpy array\")\n        if id <= 0:\n            raise ValueError(\"id must be greater than zero\")\n        self._data = data.astype(int) * id",
+        "peekOfCode": "class Mask():\n    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:\n        \"\"\"\n        data: np.array([], dtype=np.boolean)\n        \"\"\"\n        if data.ndim != 2:\n            raise ValueError(\"data must be a 2D numpy array\")\n        if id <= 0:\n            raise ValueError(\"id must be greater than zero\")\n        self._data = data.astype(int) * id",
         "detail": "schemas.process_result",
         "documentation": {}
     },
@@ -358,7 +415,7 @@
         "kind": 6,
         "importPath": "schemas.process_result",
         "description": "schemas.process_result",
-        "peekOfCode": "class ProcessResultItem():\n    def __init__(self, img_file_path: str, mask: Mask):\n        self._img_file_path = img_file_path\n        self._mask = mask\n    @property\n    def file_name_without_ext(self) -> str:\n        return self._img_file_path.split(\"/\")[-1].split(\".\")[0]\n    @property\n    def img_file_path(self) -> str:\n        return self._img_file_path",
+        "peekOfCode": "class ProcessResultItem():\n    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):\n        self._img_file_path = img_file_path\n        self._mask = mask\n        self._data_type = data_type # 原始数据类型 train, validation, test\n    @property\n    def file_name_without_ext(self) -> str:\n        return self._img_file_path.split(\"/\")[-1].split(\".\")[0]\n    @property\n    def img_file_path(self) -> str:",
         "detail": "schemas.process_result",
         "documentation": {}
     },
@@ -376,7 +433,7 @@
         "kind": 6,
         "importPath": "services.base_preprocess_service",
         "description": "services.base_preprocess_service",
-        "peekOfCode": "class BasePreprocessService(ABC):\n    @abstractmethod\n    def call(self) -> PreprocessResult:\n        pass\n    @abstractmethod\n    def ori_label_2_id_map(self, label: str) -> int:\n        pass\nclass PreprocessFactory():\n    def create(self, service_name: str) -> BasePreprocessService:\n        if service_name == \"MAR20\":",
+        "peekOfCode": "class BasePreprocessService(ABC):\n    @abstractmethod\n    def call(self) -> PreprocessResult:\n        pass\n    @abstractmethod\n    def ori_label_2_id_map(self, label: str) -> dict:\n        pass\nclass PreprocessFactory():\n    def create(self, service_name: str) -> BasePreprocessService:\n        if service_name == \"MAR20\":",
         "detail": "services.base_preprocess_service",
         "documentation": {}
     },
@@ -403,7 +460,7 @@
         "kind": 6,
         "importPath": "services.output_service",
         "description": "services.output_service",
-        "peekOfCode": "class OutputService():\n    def __init__(self, dataset_name: str='default'):\n        self._dataset_name = dataset_name\n        self._output_dir = os.path.join(OUTPUT_DIR, self._dataset_name)\n        self._output_ann_dir = os.path.join(self._output_dir, \"ann_dir\")\n        self._output_img_dir = os.path.join(self._output_dir, \"img_dir\")\n        os.makedirs(self._output_ann_dir, exist_ok=True)\n        os.makedirs(self._output_img_dir, exist_ok=True)\n        self._train_ann_dir = os.path.join(self._output_ann_dir, \"train\")\n        self._val_ann_dir = os.path.join(self._output_ann_dir, \"val\")",
+        "peekOfCode": "class OutputService():\n    def __init__(self, dataset_name: str='default'):\n        self._dataset_name = dataset_name\n        self._output_dir = os.path.join(OUTPUT_DIR, self._dataset_name)\n        self._output_ann_dir = os.path.join(self._output_dir, \"ann_dir\")\n        self._output_img_dir = os.path.join(self._output_dir, \"img_dir\")\n        self._train_ann_dir = os.path.join(self._output_ann_dir, \"train\")\n        self._val_ann_dir = os.path.join(self._output_ann_dir, \"val\")\n        self._train_img_dir = os.path.join(self._output_img_dir, \"train\")\n        self._val_img_dir = os.path.join(self._output_img_dir, \"val\")",
         "detail": "services.output_service",
         "documentation": {}
     },
@@ -498,11 +555,20 @@
         "documentation": {}
     },
     {
+        "label": "DataType",
+        "kind": 6,
+        "importPath": "util.constant",
+        "description": "util.constant",
+        "peekOfCode": "class DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
+        "detail": "util.constant",
+        "documentation": {}
+    },
+    {
         "label": "ROOT_DIR",
         "kind": 5,
         "importPath": "util.constant",
         "description": "util.constant",
-        "peekOfCode": "ROOT_DIR = '/Users/sofly/projects/dataprocess/sam'\nORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')",
+        "peekOfCode": "ROOT_DIR = '/Users/sofly/projects/dataprocess/sam'\nORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
         "detail": "util.constant",
         "documentation": {}
     },
@@ -511,7 +577,7 @@
         "kind": 5,
         "importPath": "util.constant",
         "description": "util.constant",
-        "peekOfCode": "ORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')",
+        "peekOfCode": "ORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
         "detail": "util.constant",
         "documentation": {}
     },
@@ -520,7 +586,7 @@
         "kind": 5,
         "importPath": "util.constant",
         "description": "util.constant",
-        "peekOfCode": "CHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')",
+        "peekOfCode": "CHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
         "detail": "util.constant",
         "documentation": {}
     },
@@ -529,7 +595,7 @@
         "kind": 5,
         "importPath": "util.constant",
         "description": "util.constant",
-        "peekOfCode": "OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')",
+        "peekOfCode": "OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
         "detail": "util.constant",
         "documentation": {}
     }
