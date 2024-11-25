@@ -17,7 +17,7 @@ class Mars20PreprocessService(BasePreprocessService):
         all_xml_files = os.listdir(anno_folder)
         all_xml_files = [f for f in all_xml_files if f.endswith('.xml')]
 
-        result = PreprocessResult([])
+        result = PreprocessResult()
         for xml_file in all_xml_files:
             tree = etree.parse(os.path.join(anno_folder, xml_file))
             img_file_path = os.path.join(self._dataset_path, 'JPEGImages', 'JPEGImages', os.path.splitext(xml_file)[0] + ".jpg")
