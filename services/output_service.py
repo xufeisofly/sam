@@ -28,19 +28,19 @@ class OutputService():
         os.makedirs(self._val_img_dir, exist_ok=True)
         os.makedirs(os.path.join(self._output_dir, "origin_data"), exist_ok=True)
 
-    def clear_all_images(self):
+    def clear_all(self):
         for folder in [self._train_ann_dir, self._val_ann_dir, self._train_img_dir, self._val_img_dir]:
             for f in os.listdir(folder):
                 os.remove(os.path.join(folder, f))
 
 
     def call(self, data: ProcessResult, ori_label_2_id_map: dict):
-        self.clear_all_images()
-        train_result, val_result = self.seperate_train_and_val_result(data)
+        self.clear_all()
+        train_result, val_result = self.separate_train_and_val_result(data)
         self.save_to_ann_dir(train_result, val_result)
         self.save_type_map(ori_label_2_id_map)
 
-    def seperate_train_and_val_result(self, result: ProcessResult) -> Tuple[ProcessResult, ProcessResult]:
+    def separate_train_and_val_result(self, result: ProcessResult) -> Tuple[ProcessResult, ProcessResult]:
         """将 result 按比例分为训练集和验证集
         """
         train_result = ProcessResult()

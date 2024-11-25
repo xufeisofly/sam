@@ -10,20 +10,48 @@ from segment_anything import sam_model_registry, SamPredictor
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem
 from schemas.process_result import Mask, ProcessResultItem, ProcessResult
 from util.constant import CHECKPOINT_DIR
+from concurrent.futures import ProcessPoolExecutor
 
 
 class SamProcessService():
     def __init__(self, ori_label_2_id_map: dict) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
 
-    def call(self, data: PreprocessResult) -> ProcessResult:
+    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:
+        # result = ProcessResult()
+        # for item in data.result_list:
+        #     result_item = self.call_one(item)
+        #     result.append(result_item)
+        # return result
+    
         result = ProcessResult()
-        for item in data.result_list:
-            result_item = self.call_one(item)
-            result.append(result_item)
-        return result
+        # num_gpus = torch.cuda.device_count()
+        print(f"Using {parallel_num} concurrent")
+        
+        # 创建进程池
+        with ProcessPoolExecutor(max_workers=parallel_num) as executor:
+            futures = []
+            for gpu_id, item in enumerate(data.result_list):
+                if use_gpu:
+                    futures.append(executor.submit(self._call_on_gpu, gpu_id, item))
+                else:
+                    futures.append(executor.submit(self._call_on_cpu, item))
 
-    def call_one(self, item: PreprocessResultItem) -> ProcessResultItem: 
+            # 等待所有任务完成
+            for future in futures:
+                result.append(future.result())
+
+        return result
+    
+    def _call_on_gpu(self, gpu_id, item):
+        torch.cuda.set_device(gpu_id)
+        return self.call_one(item, use_gpu=True)  # 调用你的单项处理逻辑
+    
+    def _call_on_cpu(self, item):
+        return self.call_one(item)
+
+
+    def call_one(self, item: PreprocessResultItem, use_gpu=False) -> ProcessResultItem: 
         image = cv2.imread(item.img_file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -31,6 +59,8 @@ class SamProcessService():
         model_type = "vit_h"
 
         sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+        if use_gpu:
+            sam.to(device="cuda")
 
         predictor = SamPredictor(sam)
         # slow
