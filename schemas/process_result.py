@@ -90,49 +90,64 @@ class ProcessResultItem():
 
 
 class ProcessResult():
-    def __init__(self, result_list: List[ProcessResultItem] = None):
-        self._result_list = result_list if result_list is not None else []
+    def __init__(self, train_result_list: List[ProcessResultItem] = None,
+                 val_result_list: List[ProcessResultItem] = None,
+                 test_result_list: List[ProcessResultItem] = None):
+        self._train_result_list = train_result_list if train_result_list is not None else []
+        self._val_result_list = val_result_list if val_result_list is not None else []
+        self._test_result_list = test_result_list if test_result_list is not None else []
         self._id_count_map = {}
-        for item in self._result_list:
+        for item in self.result_list:
             for k, v in item.get_id_count_map().items():
                 if k in self._id_count_map:
                     self._id_count_map[k] += v
                 else:
                     self._id_count_map[k] = v
-        self._data_types = set([item.data_type for item in self._result_list])
-        
+  
+    @property
+    def train_result_list(self) -> List[ProcessResultItem]:
+        return self._train_result_list
+
+    @property
+    def val_result_list(self) -> List[ProcessResultItem]:
+        return self._val_result_list
+
+    @property
+    def test_result_list(self) -> List[ProcessResultItem]:
+        return self._test_result_list
 
     @property
     def result_list(self) -> List[ProcessResultItem]:
-        return self._result_list
+        return self._train_result_list + self._val_result_list + self._test_result_list
     
     def append(self, item: ProcessResultItem):
-        self._result_list.append(item)
+        if item.data_type == DataType.TRAIN:
+            self._train_result_list.append(item)
+        elif item.data_type == DataType.VAL:
+            self._val_result_list.append(item)
+        elif item.data_type == DataType.TEST:
+            self._test_result_list.append(item)
+        else:
+            raise ValueError("Invalid data type")
+
         for k, v in item.get_id_count_map().items():
             if k in self._id_count_map:
                 self._id_count_map[k] += v
             else:
                 self._id_count_map[k] = v
-        self._data_types.add(item.data_type)
 
     def get_id_count_map(self) -> dict:
         return self._id_count_map
-    
-    def has_val(self):
-        return DataType.VAL in self._data_types
-    
-    def has_test(self):
-        return DataType.TEST in self._data_types
     
     def all_ids(self):
         return list(self._id_count_map.keys())
 
     def __iter__(self):
-        for item in self._result_list:
+        for item in self.result_list:
             yield item
 
     def __len__(self):
-        return len(self._result_list)
+        return len(self.result_list)
     
     def __getitem__(self, index):
-        return self._result_list[index]
+        return self.result_list[index]

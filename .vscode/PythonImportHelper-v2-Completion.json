@@ -397,7 +397,7 @@
         "kind": 6,
         "importPath": "schemas.preprocess_result",
         "description": "schemas.preprocess_result",
-        "peekOfCode": "class PreprocessResult():\n    def __init__(self, result_list: List[PreprocessResultItem] = None) -> None:\n        self._result_list = result_list if result_list is not None else []\n    def append(self, item: PreprocessResultItem):\n        self._result_list.append(item)\n    @property\n    def result_list(self):\n        return self._result_list\n    @property\n    def ori_labels(self):",
+        "peekOfCode": "class PreprocessResult():\n    def __init__(self, train_result_list: List[PreprocessResultItem] = None,\n                 val_result_list: List[PreprocessResultItem] = None,\n                 test_result_list: List[PreprocessResultItem] = None) -> None:\n        self._train_result_list = train_result_list if train_result_list is not None else []\n        self._val_result_list = val_result_list if val_result_list is not None else []\n        self._test_result_list = test_result_list if test_result_list is not None else []\n    def append(self, item: PreprocessResultItem):\n        if item.data_type == DataType.TRAIN:\n            self._train_result_list.append(item)",
         "detail": "schemas.preprocess_result",
         "documentation": {}
     },
@@ -424,7 +424,7 @@
         "kind": 6,
         "importPath": "schemas.process_result",
         "description": "schemas.process_result",
-        "peekOfCode": "class ProcessResult():\n    def __init__(self, result_list: List[ProcessResultItem] = None):\n        self._result_list = result_list if result_list is not None else []\n        self._id_count_map = {}\n        for item in self._result_list:\n            for k, v in item.get_id_count_map().items():\n                if k in self._id_count_map:\n                    self._id_count_map[k] += v\n                else:\n                    self._id_count_map[k] = v",
+        "peekOfCode": "class ProcessResult():\n    def __init__(self, train_result_list: List[ProcessResultItem] = None,\n                 val_result_list: List[ProcessResultItem] = None,\n                 test_result_list: List[ProcessResultItem] = None):\n        self._train_result_list = train_result_list if train_result_list is not None else []\n        self._val_result_list = val_result_list if val_result_list is not None else []\n        self._test_result_list = test_result_list if test_result_list is not None else []\n        self._id_count_map = {}\n        for item in self.result_list:\n            for k, v in item.get_id_count_map().items():",
         "detail": "schemas.process_result",
         "documentation": {}
     },
@@ -451,7 +451,7 @@
         "kind": 6,
         "importPath": "services.mars20_preprocess_service",
         "description": "services.mars20_preprocess_service",
-        "peekOfCode": "class Mars20PreprocessService(BasePreprocessService):\n    def __init__(self) -> None:\n        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, \"MARS20\")\n    def call(self) -> PreprocessResult:\n        anno_folder = os.path.join(self._dataset_path, \"Annotations/Horizontal Bounding Boxes\")\n        all_xml_files = os.listdir(anno_folder)\n        all_xml_files = [f for f in all_xml_files if f.endswith('.xml')]\n        result = PreprocessResult([])\n        for xml_file in all_xml_files:\n            tree = etree.parse(os.path.join(anno_folder, xml_file))",
+        "peekOfCode": "class Mars20PreprocessService(BasePreprocessService):\n    def __init__(self) -> None:\n        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, \"MARS20\")\n    def call(self) -> PreprocessResult:\n        anno_folder = os.path.join(self._dataset_path, \"Annotations/Horizontal Bounding Boxes\")\n        all_xml_files = os.listdir(anno_folder)\n        all_xml_files = [f for f in all_xml_files if f.endswith('.xml')]\n        result = PreprocessResult()\n        for xml_file in all_xml_files:\n            tree = etree.parse(os.path.join(anno_folder, xml_file))",
         "detail": "services.mars20_preprocess_service",
         "documentation": {}
     },
