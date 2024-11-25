@@ -35,7 +35,6 @@ pycocotools==2.0.8
 Pygments==2.18.0
 pyparsing==3.2.0
 python-dateutil==2.9.0.post0
--e git+ssh://git@github.com/xufeisofly/sam.git@28eceb814302f7ecf14ae022d66386a57d85964d#egg=sam
 segment_anything @ git+https://github.com/facebookresearch/segment-anything.git@dca509fe793f601edb92606367a655c15ac00fdf
 six==1.16.0
 stack-data==0.6.3

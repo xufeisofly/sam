@@ -4,9 +4,11 @@ from __future__ import annotations
 import numpy as np
 
 from typing import List
+from schemas.preprocess_result import BoxItem
+from util.constant import DataType
 
 class Mask():
-    def __init__(self, img_file_path: str, data: np.ndarray, id: int) -> None:
+    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:
         """
         data: np.array([], dtype=np.boolean)
         """
@@ -20,6 +22,7 @@ class Mask():
         self._id_count_map = {
             id: 1,
         }
+        self._box_items = box_items if box_items is not None else []
 
 
     def update(self, mask: Mask) -> None:
@@ -32,11 +35,16 @@ class Mask():
                 self._id_count_map[k] += v
             else:
                 self._id_count_map[k] = v
+        self._box_items.extend(mask.box_items)
         
 
     @property
     def data(self) -> np.ndarray:
         return self._data.astype(np.uint8)
+    
+    @property
+    def box_items(self) -> List[BoxItem]:
+        return self._box_items
     
     def get_id_count_map(self) -> dict:
         """
@@ -53,9 +61,10 @@ class Mask():
         return self._img_file_path
     
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask):
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):
         self._img_file_path = img_file_path
         self._mask = mask
+        self._data_type = data_type # 原始数据类型 train, validation, test
 
     @property
     def file_name_without_ext(self) -> str:
@@ -68,6 +77,10 @@ class ProcessResultItem():
     @property
     def mask(self) -> Mask:
         return self._mask
+    
+    @property
+    def data_type(self) -> DataType:
+        return self._data_type
     
     def get_id_count_map(self) -> dict:
         return self._mask.get_id_count_map()
@@ -86,6 +99,7 @@ class ProcessResult():
                     self._id_count_map[k] += v
                 else:
                     self._id_count_map[k] = v
+        self._data_types = set([item.data_type for item in self._result_list])
         
 
     @property
@@ -99,9 +113,16 @@ class ProcessResult():
                 self._id_count_map[k] += v
             else:
                 self._id_count_map[k] = v
+        self._data_types.add(item.data_type)
 
     def get_id_count_map(self) -> dict:
         return self._id_count_map
+    
+    def has_val(self):
+        return DataType.VAL in self._data_types
+    
+    def has_test(self):
+        return DataType.TEST in self._data_types
     
     def all_ids(self):
         return list(self._id_count_map.keys())

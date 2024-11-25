@@ -1,11 +1,13 @@
 # coding: utf-8
 import numpy as np
 from typing import List
+from util.constant import DataType
 
 class BoxItem():
     def __init__(self, ori_label: str, box_array: np.array) -> None:
         self._ori_label = ori_label
         self._box_array = box_array
+        self._id = None
 
     @property
     def ori_label(self):
@@ -14,12 +16,24 @@ class BoxItem():
     @property
     def box_array(self):
         return self._box_array
+    
+    @property
+    def box_array_coco(self):
+        return [int(self._box_array[0]), int(self._box_array[1]), int(self._box_array[2]-self._box_array[0]), int(self._box_array[3]-self._box_array[1])]
+    
+    @property
+    def id(self):
+        return self._id
+    
+    def set_id(self, value):
+        self._id = value
 
 
 class PreprocessResultItem():
-    def __init__(self, img_file_path: str, box_items: List[BoxItem] = None) -> None:
+    def __init__(self, img_file_path: str, box_items: List[BoxItem] = None, data_type: DataType=DataType.TRAIN) -> None:
         self._img_file_path = img_file_path
         self._box_items = box_items if box_items is not None else []
+        self._data_type = data_type
 
     def append(self, item: BoxItem):
         self._box_items.append(item)
@@ -35,6 +49,10 @@ class PreprocessResultItem():
     @property
     def ori_labels(self):
         return [item.ori_label for item in self._box_items]
+    
+    @property
+    def data_type(self) -> DataType:
+        return self._data_type
 
 
 class PreprocessResult():

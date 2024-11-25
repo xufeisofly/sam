@@ -4,7 +4,7 @@ import numpy as np
 
 from services.base_preprocess_service import BasePreprocessService
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem, BoxItem
-from util.constant import ORIGIN_DATA_DIR
+from util.constant import ORIGIN_DATA_DIR, DataType
 from typing import List
 from lxml import etree
 
@@ -23,7 +23,7 @@ class Mars20PreprocessService(BasePreprocessService):
             img_file_path = os.path.join(self._dataset_path, 'JPEGImages', 'JPEGImages', os.path.splitext(xml_file)[0] + ".jpg")
             root = tree.getroot()
             objects = root.xpath("//object")
-            result_item = PreprocessResultItem(img_file_path=img_file_path)
+            result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=DataType.TRAIN)
 
             for obj in objects:
                 box_array = np.array([int(obj.find('bndbox/xmin').text),
@@ -39,7 +39,7 @@ class Mars20PreprocessService(BasePreprocessService):
 
         return result    
 
-    def ori_label_2_id_map(self) -> int:
+    def ori_label_2_id_map(self) -> dict:
         return {
             'SU-35': 255,
             'C-130': 254,
