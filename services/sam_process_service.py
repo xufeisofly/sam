@@ -44,7 +44,7 @@ class SamProcessService():
         return result
     
     def _call_on_gpu(self, gpu_id, item):
-        torch.cuda.set_device(gpu_id)
+        torch.cuda.set_device(0)
         return self.call_one(item, use_gpu=True)  # 调用你的单项处理逻辑
     
     def _call_on_cpu(self, item):
