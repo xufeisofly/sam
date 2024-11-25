@@ -9,7 +9,7 @@ if __name__ == '__main__':
     preprocess_result = preprocessor.call()
 
     processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map())
-    process_result = processor.call(preprocess_result, use_gpu=False, parallel_num=1)
+    process_result = processor.call(preprocess_result, use_gpu=False, parallel_num=2)
 
     output_service = OutputService('MAR20')
     output_service.call(process_result, preprocessor.ori_label_2_id_map())
