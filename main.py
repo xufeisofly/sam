@@ -5,7 +5,7 @@ from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', help='数据集名称', default='MAR20', type=str)
     parser.add_argument('--use_gpu', help='是否使用 gpu', default=True, type=bool)
@@ -20,3 +20,7 @@ if __name__ == '__main__':
 
     output_service = OutputService(args.dataset)
     output_service.call(process_result, preprocessor.ori_label_2_id_map())
+    
+    
+if __name__ == "__main__":
+    main()
