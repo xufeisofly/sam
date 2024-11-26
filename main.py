@@ -12,11 +12,11 @@ if __name__ == '__main__':
     parser.add_argument('--parallel_num', help='多进程数量', default=1, type=int)
     args = parser.parse_args()
     
-    preprocessor = PreprocessFactory().create('MAR20')
+    preprocessor = PreprocessFactory().create(args.dataset)
     preprocess_result = preprocessor.call()
 
     processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map())
     process_result = processor.call(preprocess_result, use_gpu=args.use_gpu, parallel_num=args.parallel_num)
 
-    output_service = OutputService('MAR20')
+    output_service = OutputService(args.dataset)
     output_service.call(process_result, preprocessor.ori_label_2_id_map())
