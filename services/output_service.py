@@ -125,7 +125,7 @@ class OutputService():
 
     def save_type_map(self, ori_label_2_id_map: dict):
         with open(os.path.join(self._output_dir, 'type_map.json'), 'w') as f:
-            json.dump(ori_label_2_id_map, f)
+            json.dump(ori_label_2_id_map, f, indent=4)
         
     def _save_mask_result_item_tif(self, result_item: ProcessResultItem, dir):
         image = Image.fromarray(result_item.mask.data)
@@ -172,13 +172,13 @@ class OutputService():
         
         if len(train_annotations) > 0:
             with open(os.path.join(self._detection_ann_dir, 'train.json'), 'w') as f:
-                json.dump({'annotations': train_annotations, 'categories': categories}, f)
+                json.dump({'annotations': train_annotations, 'categories': categories}, f, indent=4)
         if len(val_annotations) > 0:
             with open(os.path.join(self._detection_ann_dir, 'val.json'), 'w') as f:
-                json.dump({'annotations': val_annotations, 'categories': categories}, f)            
+                json.dump({'annotations': val_annotations, 'categories': categories}, f, indent=4)            
         if len(test_annotations) > 0:
             with open(os.path.join(self._detection_ann_dir, 'test.json'), 'w') as f:
-                json.dump({'annotations': test_annotations, 'categories': categories}, f)
+                json.dump({'annotations': test_annotations, 'categories': categories}, f, indent=4)
                         
     def _get_detection_image_path(self, result_item: ProcessResultItem):
         return result_item.data_type.value + '/' + result_item.file_name_without_ext + '.tif'
