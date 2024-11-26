@@ -39,6 +39,8 @@ class SamProcessService():
             # 等待所有任务完成
             for future in futures:
                 result.append(future.result())
+                
+        print(f"progress: {len(result)}/{len(data.result_list)}")
 
         return result
     
