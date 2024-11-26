@@ -15,7 +15,7 @@ class Mars20PreprocessService(BasePreprocessService):
     def call(self) -> PreprocessResult:
         anno_folder = os.path.join(self._dataset_path, "Annotations/Horizontal Bounding Boxes")
         all_xml_files = os.listdir(anno_folder)
-        all_xml_files = [f for f in all_xml_files if f.endswith('.xml')]
+        all_xml_files = [f for f in all_xml_files if f.endswith('.xml') and not f.startswith('._')]
 
         result = PreprocessResult()
         for xml_file in all_xml_files:
