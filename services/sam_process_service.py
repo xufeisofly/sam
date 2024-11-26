@@ -32,25 +32,19 @@ class SamProcessService():
         with ProcessPoolExecutor(max_workers=parallel_num) as executor:
             futures = []
             for i, item in enumerate(data.result_list):
-                retries = 0
-                while retries < max_retries:
-                    try:
-                        if use_gpu:
-                            gpu_id = i % num_gpus
-                            future = executor.submit(self._call_on_gpu, gpu_id, item)
-                        else:
-                            future = executor.submit(self._call_on_cpu, item)         
-                        futures.append((future, retries))
-                        break
-                    except Exception as e:
-                        torch.cuda.empty_cache()  # 清理缓存
-                        retries += 1
-                        logger.error(f"Exception occurred: {e}. Retrying...")
-                        if retries >= max_retries:
-                            logger.error(f"Task {i} submission failed after {max_retries} retries")
-                            # 记录失败的任务
-                            with open(self._failed_items_file, 'a') as f:
-                                f.write(f"{item.img_file_path}\n")
+                try:
+                    if use_gpu:
+                        gpu_id = i % num_gpus
+                        future = executor.submit(self._call_on_gpu, gpu_id, item)
+                    else:
+                        future = executor.submit(self._call_on_cpu, item)         
+                    futures.append(future)
+                except Exception as e:
+                    torch.cuda.empty_cache()  # 清理缓存
+                    logger.error(f"Exception occurred: {e}. Retrying...")
+                    # 记录失败的任务
+                    with open(self._failed_items_file, 'a') as f:
+                        f.write(f"{item.img_file_path}\n")
 
             # 等待所有任务完成
             for future in futures:
