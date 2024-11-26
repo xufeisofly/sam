@@ -17,8 +17,9 @@ from concurrent.futures import ProcessPoolExecutor
 class SamProcessService():
     def __init__(self, ori_label_2_id_map: dict) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
+        self._failed_items_file = "failed_items.txt"
 
-    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:
+    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1, max_retries=3) -> ProcessResult:
         result = ProcessResult()
         if use_gpu:
             num_gpus = torch.cuda.device_count()
@@ -31,11 +32,25 @@ class SamProcessService():
         with ProcessPoolExecutor(max_workers=parallel_num) as executor:
             futures = []
             for i, item in enumerate(data.result_list):
-                if use_gpu:
-                    gpu_id = i % num_gpus
-                    futures.append(executor.submit(self._call_on_gpu, gpu_id, item))
-                else:
-                    futures.append(executor.submit(self._call_on_cpu, item))
+                retries = 0
+                while retries < max_retries:
+                    try:
+                        if use_gpu:
+                            gpu_id = i % num_gpus
+                            future = executor.submit(self._call_on_gpu, gpu_id, item)
+                        else:
+                            future = executor.submit(self._call_on_cpu, item)         
+                        futures.append((future, retries))
+                        break
+                    except Exception as e:
+                        torch.cuda.empty_cache()  # 清理缓存
+                        retries += 1
+                        logger.error(f"Exception occurred: {e}. Retrying...")
+                        if retries >= max_retries:
+                            logger.error(f"Task {i} submission failed after {max_retries} retries")
+                            # 记录失败的任务
+                            with open(self._failed_items_file, 'a') as f:
+                                f.write(f"{item.img_file_path}\n")
 
             # 等待所有任务完成
             for future in futures:
