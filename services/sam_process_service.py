@@ -10,6 +10,7 @@ from segment_anything import sam_model_registry, SamPredictor
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem
 from schemas.process_result import Mask, ProcessResultItem, ProcessResult
 from util.constant import CHECKPOINT_DIR
+from util.logger import logger
 from concurrent.futures import ProcessPoolExecutor
 
 
@@ -39,7 +40,7 @@ class SamProcessService():
             # 等待所有任务完成
             for future in futures:
                 result.append(future.result())
-                print(f"progress: {len(result)}/{len(data.result_list)}")
+                logger.info(f"progress: {len(result)}/{len(data.result_list)}")
 
         return result
     
