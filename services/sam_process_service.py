@@ -24,8 +24,8 @@ class SamProcessService():
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
                 raise RuntimeError("No GPUs available, but 'use_gpu' is set to True")
-            print(f"Detected {num_gpus} GPUs")
-        print(f"Using {parallel_num} concurrent processes")
+            logger.info(f"Detected {num_gpus} GPUs")
+        logger.info(f"Using {parallel_num} concurrent processes")
         
         # 创建进程池
         with ProcessPoolExecutor(max_workers=parallel_num) as executor:
@@ -76,7 +76,6 @@ class SamProcessService():
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id
             box_item.set_id(id)
-            print(id, box_item.ori_label)
             if mask is None:
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
             else:
