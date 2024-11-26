@@ -18,6 +18,9 @@ class PreprocessFactory():
     def create(self, service_name: str) -> BasePreprocessService:
         if service_name == "MAR20":
             from services.mars20_preprocess_service import Mars20PreprocessService
+            return Mars20PreprocessService()
+        elif service_name == "BridgeDataset":
+            from services.bridge_preprocess_service import BridgePreprocessService
+            return BridgePreprocessService()
         else:
             raise ValueError("Invalid service name")
-        return Mars20PreprocessService()
