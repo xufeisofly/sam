@@ -13,6 +13,6 @@ setup(
         'numpy',
     ],
     package_dir={
-        'sam': './',
+        'sam': './sam',
     },
 )
