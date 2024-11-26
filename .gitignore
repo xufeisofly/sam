@@ -4,3 +4,4 @@ checkpoints/
 origin_data/
 output/
 .vscode/
+sam.egg-info/
