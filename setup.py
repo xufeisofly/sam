@@ -5,7 +5,7 @@ setup(
     version='0.1.0',
     entry_points={
         'console_scripts': [
-            'sam = main:main',
+            'sam = sam.main:main',
         ]
     },
     packages=find_packages(),
