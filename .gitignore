@@ -6,5 +6,3 @@ output/
 .vscode/
 sam.egg-info/
 build/
-log/*
-!log/
