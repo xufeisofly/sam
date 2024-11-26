@@ -19,13 +19,19 @@ class SamProcessService():
         self._ori_label_2_id_map = ori_label_2_id_map
         self._failed_items_file = "failed_items.txt"
 
-    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1, max_retries=3) -> ProcessResult:
+    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=0) -> ProcessResult:
         result = ProcessResult()
         if use_gpu:
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
                 raise RuntimeError("No GPUs available, but 'use_gpu' is set to True")
             logger.info(f"Detected {num_gpus} GPUs")
+            
+        if parallel_num == 0 and num_gpus > 0:
+            parallel_num = num_gpus
+        else:
+            parallel_num = 1
+            
         logger.info(f"Using {parallel_num} concurrent processes")
         
         # 创建进程池
