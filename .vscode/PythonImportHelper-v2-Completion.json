@@ -343,6 +343,15 @@
         "documentation": {}
     },
     {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
         "label": "SamProcessService",
         "importPath": "services.sam_process_service",
         "description": "services.sam_process_service",
@@ -568,7 +577,7 @@
         "kind": 5,
         "importPath": "util.constant",
         "description": "util.constant",
-        "peekOfCode": "ROOT_DIR = '/Users/sofly/projects/dataprocess/sam'\nORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
+        "peekOfCode": "ROOT_DIR = '/Users/sofly/projects/dataprocess/sam' if not os.environ.get('SAM_ROOT_DIR') else os.environ.get('SAM_ROOT_DIR')\nORIGIN_DATA_DIR = os.path.join(ROOT_DIR, 'origin_data')\nCHECKPOINT_DIR = os.path.join(ROOT_DIR, 'checkpoints')\nOUTPUT_DIR = os.path.join(ROOT_DIR, 'output')\nclass DataType(Enum):\n    TRAIN = 'train'\n    VAL = 'val'\n    TEST = 'test'",
         "detail": "util.constant",
         "documentation": {}
     },
