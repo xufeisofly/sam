@@ -7,8 +7,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 # 调试模式
 pip install -e .
-# 生产模式
-pip install .
 ```
 
 # Run

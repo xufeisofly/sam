@@ -12,7 +12,4 @@ setup(
     install_requires=[
         'numpy',
     ],
-    package_dir={
-        'sam': './sam',
-    },
 )

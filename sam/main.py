@@ -20,7 +20,3 @@ def main():
 
     output_service = OutputService(args.dataset)
     output_service.call(process_result, preprocessor.ori_label_2_id_map())
-    
-    
-if __name__ == "__main__":
-    main()
