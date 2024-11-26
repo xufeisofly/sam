@@ -478,7 +478,7 @@
         "kind": 6,
         "importPath": "services.sam_process_service",
         "description": "services.sam_process_service",
-        "peekOfCode": "class SamProcessService():\n    def __init__(self, ori_label_2_id_map: dict) -> None:\n        self._ori_label_2_id_map = ori_label_2_id_map\n    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:\n        # result = ProcessResult()\n        # for item in data.result_list:\n        #     result_item = self.call_one(item)\n        #     result.append(result_item)\n        # return result\n        result = ProcessResult()",
+        "peekOfCode": "class SamProcessService():\n    def __init__(self, ori_label_2_id_map: dict) -> None:\n        self._ori_label_2_id_map = ori_label_2_id_map\n    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:\n        result = ProcessResult()\n        print(f\"Using {parallel_num} concurrent\")\n        if use_gpu:\n            num_gpus = torch.cuda.device_count()\n            if num_gpus == 0:\n                raise RuntimeError(\"No GPUs available, but 'use_gpu' is set to True\")",
         "detail": "services.sam_process_service",
         "documentation": {}
     },

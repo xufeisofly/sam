@@ -18,21 +18,21 @@ class SamProcessService():
         self._ori_label_2_id_map = ori_label_2_id_map
 
     def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:
-        # result = ProcessResult()
-        # for item in data.result_list:
-        #     result_item = self.call_one(item)
-        #     result.append(result_item)
-        # return result
-    
         result = ProcessResult()
-        # num_gpus = torch.cuda.device_count()
         print(f"Using {parallel_num} concurrent")
+        if use_gpu:
+            num_gpus = torch.cuda.device_count()
+            if num_gpus == 0:
+                raise RuntimeError("No GPUs available, but 'use_gpu' is set to True")
+            print(f"Detected {num_gpus} GPUs")
+        print(f"Using {parallel_num} concurrent processes")
         
         # 创建进程池
         with ProcessPoolExecutor(max_workers=parallel_num) as executor:
             futures = []
-            for gpu_id, item in enumerate(data.result_list):
+            for i, item in enumerate(data.result_list):
                 if use_gpu:
+                    gpu_id = i % num_gpus
                     futures.append(executor.submit(self._call_on_gpu, gpu_id, item))
                 else:
                     futures.append(executor.submit(self._call_on_cpu, item))
@@ -44,7 +44,7 @@ class SamProcessService():
         return result
     
     def _call_on_gpu(self, gpu_id, item):
-        torch.cuda.set_device(0)
+        torch.cuda.set_device(gpu_id)
         return self.call_one(item, use_gpu=True)  # 调用你的单项处理逻辑
     
     def _call_on_cpu(self, item):
