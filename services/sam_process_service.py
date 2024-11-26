@@ -19,7 +19,6 @@ class SamProcessService():
 
     def call(self, data: PreprocessResult, use_gpu: False, parallel_num=1) -> ProcessResult:
         result = ProcessResult()
-        print(f"Using {parallel_num} concurrent")
         if use_gpu:
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
