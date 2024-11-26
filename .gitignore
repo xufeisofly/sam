@@ -7,4 +7,4 @@ output/
 sam.egg-info/
 build/
 log/*
-!log
+!log/
