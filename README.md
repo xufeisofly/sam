@@ -26,5 +26,7 @@ options:
 ```
 
 ```
-sam MAR20 --use_gpu=True --parallel_num=2
+sam MAR20 --use_gpu=1 --parallel_num=2
+or
+python sam/main.py MAR20 --use_gpu=0 --parallel_num=2
 ```

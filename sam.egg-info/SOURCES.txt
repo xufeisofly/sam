@@ -6,7 +6,6 @@ sam.egg-info/PKG-INFO
 sam.egg-info/SOURCES.txt
 sam.egg-info/dependency_links.txt
 sam.egg-info/entry_points.txt
-sam.egg-info/requires.txt
 sam.egg-info/top_level.txt
 schemas/__init__.py
 schemas/preprocess_result.py
