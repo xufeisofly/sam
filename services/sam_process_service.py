@@ -96,7 +96,7 @@ class SamProcessService():
             else:
                 mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
 
-        return ProcessResultItem(img_file_path=item.img_file_path, mask=mask)
+        return ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)
 
 
 def process_box_prompt(predictor: SamPredictor, input_box: np.array):

@@ -5,7 +5,7 @@ import json
 
 from schemas.process_result import ProcessResult, ProcessResultItem
 from util.constant import OUTPUT_DIR, DataType
-from typing import Tuple
+from typing import Tuple, List
 from PIL import Image
 
 
@@ -148,11 +148,14 @@ class OutputService():
         Args:
             data (ProcessResult): _description_
         """
-        train_annotations = []
-        val_annotations = []
-        test_annotations = []
- 
-        for result_item in data:
+        self._save_detection_data(data.train_result_list, ori_label_2_id_map, DataType.TRAIN)
+        self._save_detection_data(data.val_result_list, ori_label_2_id_map, DataType.VAL)
+        self._save_detection_data(data.test_result_list, ori_label_2_id_map, DataType.TEST)
+                
+    def _save_detection_data(self, result_items: List[ProcessResultItem], ori_label_2_id_map: dict, data_type: DataType):
+        annotations = []
+        
+        for result_item in result_items:
             for box_item in result_item.mask.box_items:
                 ann = {
                     'image': self._get_detection_image_path(result_item),
@@ -160,13 +163,8 @@ class OutputService():
                     'category_name': box_item.ori_label,
                     'bbox': box_item.box_array_coco,
                 }
-
-                if result_item.data_type == DataType.TRAIN:
-                    train_annotations.append(ann)
-                elif result_item.data_type == DataType.VAL:
-                    val_annotations.append(ann)
-                else:
-                    test_annotations.append(ann)
+                
+                annotations.append(ann)
         
         categories = []          
         for id, name in ori_label_2_id_map.items():
@@ -175,15 +173,10 @@ class OutputService():
                 'name': name,
             })
         
-        if len(train_annotations) > 0:
-            with open(os.path.join(self._detection_ann_dir, 'train.json'), 'w') as f:
-                json.dump({'annotations': train_annotations, 'categories': categories}, f, indent=4)
-        if len(val_annotations) > 0:
-            with open(os.path.join(self._detection_ann_dir, 'val.json'), 'w') as f:
-                json.dump({'annotations': val_annotations, 'categories': categories}, f, indent=4)            
-        if len(test_annotations) > 0:
-            with open(os.path.join(self._detection_ann_dir, 'test.json'), 'w') as f:
-                json.dump({'annotations': test_annotations, 'categories': categories}, f, indent=4)
+        if len(annotations) > 0:
+            with open(os.path.join(self._detection_ann_dir, data_type.value + '.json'), 'w') as f:
+                json.dump({'annotations': annotations, 'categories': categories}, f, indent=4)
+                
                         
-    def _get_detection_image_path(self, result_item: ProcessResultItem):
-        return result_item.data_type.value + '/' + result_item.file_name_without_ext + '.tif'
+    def _get_detection_image_path(self, result_item: ProcessResultItem, data_type: DataType):
+        return data_type.value + '/' + result_item.file_name_without_ext + '.tif'
