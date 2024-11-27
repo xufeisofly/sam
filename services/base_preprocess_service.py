@@ -22,5 +22,8 @@ class PreprocessFactory():
         elif service_name == "BridgeDataset":
             from services.bridge_preprocess_service import BridgePreprocessService
             return BridgePreprocessService()
+        elif service_name == "SODA-D":
+            from services.dior_sodad_preprocess_service import DiorSodaDPreprocessService
+            return DiorSodaDPreprocessService()
         else:
             raise ValueError("Invalid service name")

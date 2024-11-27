@@ -19,6 +19,7 @@ class OutputService():
 
         self._train_ann_dir = os.path.join(self._output_ann_dir, "train")
         self._val_ann_dir = os.path.join(self._output_ann_dir, "val")
+        self._test_ann_dir = os.path.join(self._output_ann_dir, "test")
         self._train_img_dir = os.path.join(self._output_img_dir, "train")
         self._val_img_dir = os.path.join(self._output_img_dir, "val")
         self._test_img_dir = os.path.join(self._output_img_dir, "test")
@@ -27,14 +28,16 @@ class OutputService():
         self._detection_dir = os.path.join(self._output_dir, "detection_data")
         self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
         
-        for folder in [self._output_ann_dir, self._output_img_dir, self._train_ann_dir, 
-                       self._val_ann_dir, self._train_img_dir, self._val_img_dir, self._test_img_dir,
+        for folder in [self._output_ann_dir, self._output_img_dir, self._train_ann_dir,
+                       self._val_ann_dir, self._test_ann_dir,
+                       self._train_img_dir, self._val_img_dir, self._test_img_dir,
                        self._detection_ann_dir, 
                        self._origin_data_dir]:
             os.makedirs(folder, exist_ok=True)
 
     def clear_all(self):
-        for folder in [self._train_ann_dir, self._val_ann_dir, self._train_img_dir, self._val_img_dir,
+        for folder in [self._train_ann_dir, self._val_ann_dir, self._test_ann_dir,
+                       self._train_img_dir, self._val_img_dir,
                        self._test_img_dir, self._detection_ann_dir, 
                        ]:
             for f in os.listdir(folder):
@@ -114,6 +117,8 @@ class OutputService():
             self._save_mask_result_item_tif(result_item, self._train_ann_dir)
         for result_item in result.val_result_list:
             self._save_mask_result_item_tif(result_item, self._val_ann_dir)
+        for result_item in result.test_result_list:
+            self._save_mask_result_item_tif(result_item, self._test_ann_dir)
             
     def save_to_img_dir(self, result: ProcessResult):
         for result_item in result.train_result_list:
