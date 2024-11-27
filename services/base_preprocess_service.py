@@ -5,8 +5,11 @@ from typing import List
 
 
 class BasePreprocessService(ABC):
+    def __init__(self, dataset_path=None) -> None:
+        super().__init__()
+    
     @abstractmethod
-    def call(self) -> PreprocessResult:
+    def call(self, limit=-1) -> PreprocessResult:
         pass
 
     @abstractmethod
@@ -15,15 +18,15 @@ class BasePreprocessService(ABC):
         
 
 class PreprocessFactory():
-    def create(self, service_name: str) -> BasePreprocessService:
+    def create(self, service_name: str, dataset_path=None) -> BasePreprocessService:
         if service_name == "MAR20":
             from services.mars20_preprocess_service import Mars20PreprocessService
-            return Mars20PreprocessService()
+            return Mars20PreprocessService(dataset_path=dataset_path)
         elif service_name == "BridgeDataset":
             from services.bridge_preprocess_service import BridgePreprocessService
-            return BridgePreprocessService()
+            return BridgePreprocessService(dataset_path=dataset_path)
         elif service_name == "SODA-D":
             from services.dior_sodad_preprocess_service import DiorSodaDPreprocessService
-            return DiorSodaDPreprocessService()
+            return DiorSodaDPreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")

@@ -12,19 +12,19 @@ from util.box import coco2box
 
 
 class DiorSodaDPreprocessService(BasePreprocessService):
-    def __init__(self) -> None:
-        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, "SODA-D_s")
+    def __init__(self, dataset_path=None) -> None:
+        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, "SODA-D") if dataset_path is None else dataset_path
         self._image_path = os.path.join(self._dataset_path, "Images/Images/Images")
         self._anno_path = os.path.join(self._dataset_path, "Annotations")
 
-    def call(self) -> PreprocessResult:
+    def call(self, limit=-1) -> PreprocessResult:
         train_anno_file = os.path.join(self._anno_path, 'train.json')
         val_anno_file = os.path.join(self._anno_path, 'val.json')
         test_anno_file = os.path.join(self._anno_path, 'test.json')
         
-        train_result = self._get_result_from_anno_file(train_anno_file, DataType.TRAIN)
-        val_result = self._get_result_from_anno_file(val_anno_file, DataType.VAL)
-        test_result = self._get_result_from_anno_file(test_anno_file, DataType.TEST)
+        train_result = self._get_result_from_anno_file(train_anno_file, DataType.TRAIN, limit)
+        val_result = self._get_result_from_anno_file(val_anno_file, DataType.VAL, limit)
+        test_result = self._get_result_from_anno_file(test_anno_file, DataType.TEST, limit)
         
         result = PreprocessResult(
             train_result_list=train_result.result_list,
@@ -33,7 +33,7 @@ class DiorSodaDPreprocessService(BasePreprocessService):
         return result
         
         
-    def _get_result_from_anno_file(self, anno_file_path: str, data_type: DataType) -> PreprocessResult:
+    def _get_result_from_anno_file(self, anno_file_path: str, data_type: DataType, limit=-1) -> PreprocessResult:
         with open(anno_file_path, 'r') as file:
             anno_dict = json.load(file)
 
@@ -41,6 +41,7 @@ class DiorSodaDPreprocessService(BasePreprocessService):
         
         result = PreprocessResult()
         
+        counter = 0
         for image_info in anno_dict["images"]:
             file_name = image_info['file_name']
             img_file_path = os.path.join(self._image_path, file_name)
@@ -59,8 +60,12 @@ class DiorSodaDPreprocessService(BasePreprocessService):
                 result_item.append(BoxItem(
                     ori_label=self._get_ori_label_by_token(box_info['category_id']),
                     box_array=box_array))
-                    
+
             result.append(result_item)
+            counter += 1
+            # 支持固定数量
+            if limit > 0 and counter >= limit:
+                break
             
         return result
 
