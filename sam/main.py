@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--use_gpu', help='是否使用 gpu', default=1, type=int)
     parser.add_argument('--parallel_num', help='多进程数量', default=0, type=int)
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
-    parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=0, type=int)
+    parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
     args = parser.parse_args()
     
     logger.info(f"==== 开始处理 {args.dataset}")
