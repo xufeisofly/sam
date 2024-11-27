@@ -9,10 +9,10 @@ from typing import List
 from lxml import etree
 
 class BridgePreprocessService(BasePreprocessService):
-    def __init__(self) -> None:
-        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, "BridgeDataset")
+    def __init__(self, dataset_path=None) -> None:
+        self._dataset_path = os.path.join(ORIGIN_DATA_DIR, "BridgeDataset") if dataset_path is None else dataset_path
 
-    def call(self) -> PreprocessResult:
+    def call(self, limit=-1) -> PreprocessResult:
         anno_folder = os.path.join(self._dataset_path, "bridges_dataset/Annotations")
         all_xml_files = os.listdir(anno_folder)
         all_xml_files = [f for f in all_xml_files if f.endswith('.xml')]
