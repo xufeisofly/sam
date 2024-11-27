@@ -5,7 +5,7 @@ import sys
 from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
-from utils.logger import logger
+from util.logger import logger
 
 def main():
     parser = argparse.ArgumentParser()
