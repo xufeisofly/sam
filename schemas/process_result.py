@@ -68,6 +68,10 @@ class ProcessResultItem():
 
     @property
     def file_name_without_ext(self) -> str:
+        return self._img_file_path.split("/")[-1].split(".")[0].split("_")[0]
+    
+    @property
+    def ori_file_name_without_ext(self) -> str:
         return self._img_file_path.split("/")[-1].split(".")[0]
 
     @property
