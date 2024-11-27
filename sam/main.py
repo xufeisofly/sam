@@ -23,7 +23,8 @@ def main():
     logger.info(f"==== 完成预处理 {args.dataset}")
 
     processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map())
-    process_result = processor.call(preprocess_result, use_gpu=args.use_gpu, parallel_num=args.parallel_num)
+    process_result = processor.call(preprocess_result, use_gpu=args.use_gpu, parallel_num=args.parallel_num,
+                                    merge_mask=False)
 
     logger.info(f"==== 完成 SAM 处理 {args.dataset}")
 

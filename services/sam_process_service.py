@@ -12,6 +12,7 @@ from schemas.process_result import Mask, ProcessResultItem, ProcessResult
 from util.constant import CHECKPOINT_DIR
 from util.logger import logger
 from concurrent.futures import ProcessPoolExecutor
+from typing import List
 
 
 class SamProcessService():
@@ -19,7 +20,7 @@ class SamProcessService():
         self._ori_label_2_id_map = ori_label_2_id_map
         self._failed_items_file = "failed_items.txt"
 
-    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=0) -> ProcessResult:
+    def call(self, data: PreprocessResult, use_gpu: False, parallel_num=0, merge_mask=True) -> ProcessResult:
         result = ProcessResult()
         if use_gpu:
             num_gpus = torch.cuda.device_count()
@@ -41,9 +42,9 @@ class SamProcessService():
                 try:
                     if use_gpu:
                         gpu_id = i % num_gpus
-                        future = executor.submit(self._call_on_gpu, gpu_id, item)
+                        future = executor.submit(self._call_on_gpu, gpu_id, item, merge_mask=merge_mask)
                     else:
-                        future = executor.submit(self._call_on_cpu, item)         
+                        future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
                     futures.append(future)
                 except Exception as e:
                     torch.cuda.empty_cache()  # 清理缓存
@@ -54,20 +55,20 @@ class SamProcessService():
 
             # 等待所有任务完成
             for future in futures:
-                result.append(future.result())
+                result.append(*future.result())
                 logger.info(f"progress: {len(result)}/{len(data.result_list)}")
 
         return result
     
-    def _call_on_gpu(self, gpu_id, item):
+    def _call_on_gpu(self, gpu_id, item, merge_mask=True):
         torch.cuda.set_device(gpu_id)
-        return self.call_one(item, use_gpu=True)  # 调用你的单项处理逻辑
+        return self.call_one(item, use_gpu=True, merge_mask=merge_mask)  # 调用你的单项处理逻辑
     
-    def _call_on_cpu(self, item):
-        return self.call_one(item)
+    def _call_on_cpu(self, item, merge_mask=True):
+        return self.call_one(item, merge_mask=merge_mask)
 
 
-    def call_one(self, item: PreprocessResultItem, use_gpu=False) -> ProcessResultItem: 
+    def call_one(self, item: PreprocessResultItem, use_gpu=False, merge_mask=True) -> List[ProcessResultItem]: 
         image = cv2.imread(item.img_file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -82,6 +83,7 @@ class SamProcessService():
         # slow
         predictor.set_image(image)
 
+        ret = []
         mask = None
         for box_item in item.box_items:
             mask_arrs, _ = process_box_prompt(predictor, box_item.box_array)
@@ -91,12 +93,18 @@ class SamProcessService():
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id
             box_item.set_id(id)
-            if mask is None:
-                mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
+            if merge_mask:
+                if mask is None:
+                    mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
+                else:
+                    mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
+                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
             else:
-                mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
-
-        return ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)
+                img_file_path = item.img_file_path.replace(".jpg", f"_{box_item.box_string()}.jpg")
+                mask = Mask(img_file_path, mask_arr, id, box_items=[box_item])
+                ret.append(ProcessResultItem(img_file_path=img_file_path, mask=mask, data_type=item.data_type))
+                
+        return ret
 
 
 def process_box_prompt(predictor: SamPredictor, input_box: np.array):
