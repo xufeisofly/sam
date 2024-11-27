@@ -134,7 +134,7 @@ class OutputService():
         
     def _save_mask_result_item_tif(self, result_item: ProcessResultItem, dir):
         image = Image.fromarray(result_item.mask.data)
-        file = os.path.join(dir, result_item.ori_file_name_without_ext + ".tif")
+        file = os.path.join(dir, result_item.mask_file_name_without_ext + ".tif")
         image.save(file)
         
     def _save_ori_image_tif(self, result_item: ProcessResultItem, dir):

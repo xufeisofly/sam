@@ -101,9 +101,10 @@ class SamProcessService():
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
                 ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
             else:
-                img_file_path = item.img_file_path.replace(".jpg", f"_{box_item.box_string()}.jpg")
-                mask = Mask(img_file_path, mask_arr, id, box_items=[box_item])
-                ret.append(ProcessResultItem(img_file_path=img_file_path, mask=mask, data_type=item.data_type))
+                mask_img_file_path = item.img_file_path.replace(".jpg", f"_{box_item.box_string()}.jpg")
+                mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
+                ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type,
+                                             mask_img_file_path=mask_img_file_path))
                 
         return ret
 

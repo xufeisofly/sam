@@ -61,22 +61,27 @@ class Mask():
         return self._img_file_path
     
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, mask_img_file_path:str = None):
         self._img_file_path = img_file_path
+        self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
         self._mask = mask
         self._data_type = data_type # 原始数据类型 train, validation, test
 
     @property
     def file_name_without_ext(self) -> str:
-        return self._img_file_path.split("/")[-1].split(".")[0].split("_")[0]
+        return self._img_file_path.split("/")[-1].split(".")[0]
     
     @property
-    def ori_file_name_without_ext(self) -> str:
-        return self._img_file_path.split("/")[-1].split(".")[0]
+    def mask_file_name_without_ext(self) -> str:
+        return self._mask_img_file_path.split("/")[-1].split(".")[0]
 
     @property
     def img_file_path(self) -> str:
         return self._img_file_path
+    
+    @property
+    def mask_img_file_path(self) -> str:
+        return self._mask_img_file_path
 
     @property
     def mask(self) -> Mask:
