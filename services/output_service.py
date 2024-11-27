@@ -158,7 +158,7 @@ class OutputService():
         for result_item in result_items:
             for box_item in result_item.mask.box_items:
                 ann = {
-                    'image': self._get_detection_image_path(result_item),
+                    'image': self._get_detection_image_path(result_item, data_type=data_type),
                     'category_id': box_item.id,
                     'category_name': box_item.ori_label,
                     'bbox': box_item.box_array_coco,

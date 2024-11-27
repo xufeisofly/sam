@@ -5,6 +5,7 @@ import sys
 from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
+from utils.logger import logger
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,14 +16,21 @@ def main():
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     args = parser.parse_args()
     
+    logger.info(f"==== 开始处理 {args.dataset}")
     preprocessor = PreprocessFactory().create(args.dataset, dataset_path=args.dataset_path)
     preprocess_result = preprocessor.call(limit=args.limit)
+    
+    logger.info(f"==== 完成预处理 {args.dataset}")
 
     processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map())
     process_result = processor.call(preprocess_result, use_gpu=args.use_gpu, parallel_num=args.parallel_num)
 
+    logger.info(f"==== 完成 SAM 处理 {args.dataset}")
+
     output_service = OutputService(args.dataset)
     output_service.call(process_result, preprocessor.ori_label_2_id_map())
+    
+    logger.info(f"==== 全部完成 {args.dataset}")
     
     sys.exit(0)
     
