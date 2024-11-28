@@ -105,6 +105,7 @@ class SamProcessService():
             if scores is not None and len(scores) != 0:
                 score = scores[0]
 
+            logger.info(f"-------- {score}")
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id 和置信度值
             box_item.set_id(id)
