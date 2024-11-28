@@ -6,6 +6,7 @@ import numpy as np
 from typing import List
 from schemas.preprocess_result import BoxItem
 from util.constant import DataType
+from util.box import calculate_island_area
 
 class Mask():
     def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:
@@ -28,7 +29,22 @@ class Mask():
     def update(self, mask: Mask) -> None:
         """合并两个 Mask
         """
-        self._data = np.where(self._data > mask.data, self._data, mask.data)
+        mask_new_region = (mask.data != 0) & (self._data == 0)
+        overlap_region = (mask.data > 0) & (self._data > 0)
+
+        # 更新新的区域
+        self._data[mask_new_region] = mask.data[mask_new_region]
+
+        # 处理重叠区域
+        for row, col in zip(*np.where(overlap_region)):
+            old_id = self._data[row, col]
+            new_id = mask.data[row, col]
+            old_id_size = calculate_island_area(self._data, row, col)
+            new_id_size = calculate_island_area(mask.data, row, col)
+            if old_id_size > new_id_size:
+                self._data[row, col] = new_id
+        
+        # self._data = np.where(self._data > mask.data, self._data, mask.data)
         self._count += 1
         for k, v in mask.get_id_count_map().items():
             if k in self._id_count_map:
