@@ -12,7 +12,7 @@ from util.box import coco2box
 from PIL import Image
 
 
-class Whurs19PreproceeService(BasePreprocessService):
+class Whurs19PreprocessService(BasePreprocessService):
     def __init__(self, dataset_path=None) -> None:
         self._dataset_path = os.path.join(ORIGIN_DATA_DIR, "WHU-RS19") if dataset_path is None else dataset_path
 
@@ -20,13 +20,18 @@ class Whurs19PreproceeService(BasePreprocessService):
         folder_names = os.listdir(self._dataset_path)
         result = PreprocessResult()
         
+        counter = 0
         for folder_name in folder_names:
-            counter = 0
+            if folder_name.startswith("."):
+                continue
+            
             folder_path = os.path.join(self._dataset_path, folder_name)
             img_files = os.listdir(folder_path)
-            result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=DataType.TRAIN)
+            
             for img_file in img_files:
                 img_file_path = os.path.join(folder_path, img_file)
+                result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=DataType.TRAIN)
+                
                 image = Image.open(img_file_path)
                 box_array = np.array([0, 0, image.width, image.height])
                 

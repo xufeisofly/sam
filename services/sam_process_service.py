@@ -22,6 +22,7 @@ class SamProcessService():
 
     def call(self, data: PreprocessResult, use_gpu: False, parallel_num=0, merge_mask=True) -> ProcessResult:
         result = ProcessResult()
+        num_gpus = 0
         if use_gpu:
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
