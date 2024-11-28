@@ -22,6 +22,7 @@ class SamProcessService():
 
     def call(self, data: PreprocessResult, use_gpu: False, parallel_num=0, merge_mask=True) -> ProcessResult:
         result = ProcessResult()
+        num_gpus = 0
         if use_gpu:
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
@@ -101,7 +102,8 @@ class SamProcessService():
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
                 ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
             else:
-                mask_img_file_path = item.img_file_path.replace(".jpg", f"_{box_item.box_string()}_{box_item.ori_label}.jpg")
+                ext = item.img_file_path.split("/")[-1].split(".")[1]
+                mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type,
                                              mask_img_file_path=mask_img_file_path))
