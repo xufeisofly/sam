@@ -31,29 +31,30 @@ class Mask():
     def update(self, mask: Mask) -> None:
         """合并两个 Mask
         """
-        # mask_new_region = (mask.data != 0) & (self._data == 0)
-        # overlap_region = (mask.data > 0) & (self._data > 0)
+        mask_new_region = (mask.data != 0) & (self._data == 0)
+        overlap_region = (mask.data > 0) & (self._data > 0)
 
-        # # 更新新的区域
-        # self._data[mask_new_region] = mask.data[mask_new_region]
+        # 更新新的区域
+        self._data[mask_new_region] = mask.data[mask_new_region]
         
-        # if overlap_region.any():
-        #     # 提取第一个重叠的位置
-        #     overlap_positions = np.array(list(zip(*np.where(overlap_region))))
-        #     first_row, first_col = overlap_positions[0]
-        #     new_id = mask.data[first_row, first_col]
+        if overlap_region.any():
+            # 提取第一个重叠的位置
+            overlap_positions = np.array(list(zip(*np.where(overlap_region))))
+            first_row, first_col = overlap_positions[0]
+            old_id = self._data[first_row, first_col]
+            new_id = mask.data[first_row, first_col]
 
-        #     # 缓存小岛面积
-        #     old_id_size = calculate_island_area(self._data, first_row, first_col)
-        #     new_id_size = calculate_island_area(mask.data, first_row, first_col)
+            # 缓存小岛面积
+            old_id_size = calculate_island_area(self._data, first_row, first_col)
+            new_id_size = np.sum(mask.data == new_id)
 
-        #     # 如果旧小岛面积大于新小岛，更新重叠区域
-        #     if old_id_size > new_id_size:
-        #         self._data[overlap_region] = new_id
+            # 如果旧小岛面积大于新小岛，更新重叠区域
+            if old_id_size > new_id_size:
+                self._data[overlap_region] = new_id
             
-        #     logger.info(f"===== -> {new_id}")
+            logger.info(f"===== -> {new_id}")
         
-        self._data = np.where(self._data > mask.data, self._data, mask.data)
+        # self._data = np.where(self._data > mask.data, self._data, mask.data)
         self._count += 1
         for k, v in mask.get_id_count_map().items():
             if k in self._id_count_map:
