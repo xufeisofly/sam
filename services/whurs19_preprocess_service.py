@@ -20,7 +20,6 @@ class Whurs19PreprocessService(BasePreprocessService):
         folder_names = os.listdir(self._dataset_path)
         result = PreprocessResult()
         
-        counter = 0
         for folder_name in folder_names:
             if folder_name.startswith("."):
                 continue
@@ -28,6 +27,7 @@ class Whurs19PreprocessService(BasePreprocessService):
             folder_path = os.path.join(self._dataset_path, folder_name)
             img_files = os.listdir(folder_path)
             
+            counter = 0
             for img_file in img_files:
                 img_file_path = os.path.join(folder_path, img_file)
                 result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=DataType.TRAIN)
@@ -57,7 +57,7 @@ class Whurs19PreprocessService(BasePreprocessService):
             'Forest': 248,
             'Industrial': 247,
             'Meadow': 246,
-            'Mountain': 245,
+            'Mountains': 245,
             'Park': 244,
             'Parking': 243,
             'Pond': 242,
