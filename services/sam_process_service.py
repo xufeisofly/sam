@@ -59,7 +59,7 @@ class SamProcessService():
                     logger.info(f"Waiting for {future} to complete...")
                     for ret in future.result():
                         result.append(ret)
-                        logger.info("================", len(result))
+                        logger.info(f"================{len(result)}")
                     logger.info(f"progress: {len(result)}/{len(data.result_list)}")
         except KeyboardInterrupt:
             logger.warning("Keyboard interrupt detected. Exiting.")
