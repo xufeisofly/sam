@@ -38,6 +38,7 @@ class Mask():
         self._data[mask_new_region] = mask.data[mask_new_region]
         
         if overlap_region.any():
+            logger.debug(f"Overlapped")
             # 提取第一个重叠的位置
             overlap_positions = np.array(list(zip(*np.where(overlap_region))))
             first_row, first_col = overlap_positions[0]
@@ -51,8 +52,6 @@ class Mask():
             # 如果旧小岛面积大于新小岛，更新重叠区域
             if old_id_size > new_id_size:
                 self._data[overlap_region] = new_id
-            
-            logger.info(f"===== -> {new_id}")
         
         # self._data = np.where(self._data > mask.data, self._data, mask.data)
         self._count += 1

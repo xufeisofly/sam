@@ -29,8 +29,12 @@ class SamProcessService():
                 raise RuntimeError("No GPUs available, but 'use_gpu' is set to True")
             logger.info(f"Detected {num_gpus} GPUs")
             
-        if parallel_num == 0 and num_gpus > 0:
-            parallel_num = num_gpus
+        if parallel_num == 0: 
+            if num_gpus > 0:
+                parallel_num = num_gpus
+            else:
+                parallel_num = 1
+
             
         logger.info(f"Using {parallel_num} concurrent processes")
         
