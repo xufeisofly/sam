@@ -56,8 +56,10 @@ class SamProcessService():
 
                 # 等待所有任务完成
                 for future in futures:
+                    logger.info(f"Waiting for {future} to complete...")
                     for ret in future.result():
                         result.append(ret)
+                        logger.info("================", len(result))
                     logger.info(f"progress: {len(result)}/{len(data.result_list)}")
         except KeyboardInterrupt:
             logger.warning("Keyboard interrupt detected. Exiting.")
@@ -87,7 +89,7 @@ class SamProcessService():
 
         predictor = SamPredictor(sam)
         # slow
-        logger.info("--------1", item.img_file_path)
+        logger.info(f"--------1-{item.img_file_path}")
         predictor.set_image(image)
         logger.info("--------2")
 
