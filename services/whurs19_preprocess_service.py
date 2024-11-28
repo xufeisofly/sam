@@ -38,10 +38,11 @@ class Whurs19PreprocessService(BasePreprocessService):
                 result_item.append(BoxItem(
                     ori_label=folder_name,
                     box_array=box_array))
+                result.append(result_item)
                 counter += 1
                 if limit > 0 and counter >= limit:
                     break
-            result.append(result_item)
+                
         return result
             
 
