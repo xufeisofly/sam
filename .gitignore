@@ -7,3 +7,4 @@ output/
 sam.egg-info/
 build/
 *.log
+.DS_Store
