@@ -7,6 +7,8 @@ from typing import List
 from schemas.preprocess_result import BoxItem
 from util.constant import DataType
 from util.box import calculate_island_area
+from util.logger import logger
+
 
 class Mask():
     def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:
@@ -48,6 +50,8 @@ class Mask():
             # 如果旧小岛面积大于新小岛，更新重叠区域
             if old_id_size > new_id_size:
                 self._data[overlap_region] = new_id
+            
+            logger.info(f"===== -> {new_id}")
         
         self._count += 1
         for k, v in mask.get_id_count_map().items():
