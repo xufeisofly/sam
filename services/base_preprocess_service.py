@@ -28,5 +28,8 @@ class PreprocessFactory():
         elif service_name == "SODA-D":
             from services.dior_sodad_preprocess_service import DiorSodaDPreprocessService
             return DiorSodaDPreprocessService(dataset_path=dataset_path)
+        elif service_name == "WHU-RS19":
+            from services.whurs19_preprocess_service import WhuRs19PreprocessService
+            return WhuRs19PreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
