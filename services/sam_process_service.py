@@ -89,9 +89,7 @@ class SamProcessService():
 
         predictor = SamPredictor(sam)
         # slow
-        logger.info(f"--------1-{item.img_file_path}")
         predictor.set_image(image)
-        logger.info("--------2")
 
         ret = []
         mask = None
