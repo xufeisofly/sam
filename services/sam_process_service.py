@@ -34,29 +34,35 @@ class SamProcessService():
             
         logger.info(f"Using {parallel_num} concurrent processes")
         
+        
         # 创建进程池
-        with ProcessPoolExecutor(max_workers=parallel_num) as executor:
-            futures = []
-            for i, item in enumerate(data.result_list):
-                try:
-                    if use_gpu:
-                        gpu_id = i % num_gpus
-                        future = executor.submit(self._call_on_gpu, gpu_id, item, merge_mask=merge_mask)
-                    else:
-                        future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
-                    futures.append(future)
-                except Exception as e:
-                    torch.cuda.empty_cache()  # 清理缓存
-                    logger.error(f"Exception occurred: {e}. Retrying...")
-                    # 记录失败的任务
-                    with open(self._failed_items_file, 'a') as f:
-                        f.write(f"{item.img_file_path}\n")
+        try:
+            with ProcessPoolExecutor(max_workers=parallel_num) as executor:
+                futures = []
+                for i, item in enumerate(data.result_list):
+                    try:
+                        if use_gpu:
+                            gpu_id = i % num_gpus
+                            future = executor.submit(self._call_on_gpu, gpu_id, item, merge_mask=merge_mask)
+                        else:
+                            future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
+                        futures.append(future)
+                    except Exception as e:
+                        torch.cuda.empty_cache()  # 清理缓存
+                        logger.error(f"Exception occurred: {e}. Retrying...")
+                        # 记录失败的任务
+                        with open(self._failed_items_file, 'a') as f:
+                            f.write(f"{item.img_file_path}\n")
 
-            # 等待所有任务完成
-            for future in futures:
-                for ret in future.result():
-                    result.append(ret)
-                logger.info(f"progress: {len(result)}/{len(data.result_list)}")
+                # 等待所有任务完成
+                for future in futures:
+                    for ret in future.result():
+                        result.append(ret)
+                    logger.info(f"progress: {len(result)}/{len(data.result_list)}")
+        except KeyboardInterrupt:
+            logger.warning("Keyboard interrupt detected. Exiting.")
+            executor.shutdown(wait=False, cancel_futures=True)
+            raise
 
         return result
     

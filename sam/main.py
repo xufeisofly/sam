@@ -7,6 +7,7 @@ from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
 from util.logger import logger
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', help='数据集名称', default='MAR20', type=str)
