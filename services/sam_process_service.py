@@ -62,7 +62,6 @@ class SamProcessService():
         except KeyboardInterrupt:
             logger.warning("Keyboard interrupt detected. Exiting.")
             executor.shutdown(wait=False, cancel_futures=True)
-            raise
 
         return result
     
