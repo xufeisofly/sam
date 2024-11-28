@@ -31,8 +31,6 @@ class SamProcessService():
             
         if parallel_num == 0 and num_gpus > 0:
             parallel_num = num_gpus
-        else:
-            parallel_num = 1
             
         logger.info(f"Using {parallel_num} concurrent processes")
         
