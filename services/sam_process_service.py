@@ -100,7 +100,11 @@ class SamProcessService():
             if mask_arrs is None or len(mask_arrs) == 0:
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
-            score = scores[0]
+            
+            score = 100
+            if scores is not None and len(scores) != 0:
+                score = scores[0]
+
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id 和置信度值
             box_item.set_id(id)
