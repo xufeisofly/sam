@@ -27,6 +27,9 @@ class BoxItem():
     
     def set_id(self, value):
         self._id = value
+        
+    def box_string(self):
+        return '-'.join([str(x) for x in self._box_array])        
 
 
 class PreprocessResultItem():
