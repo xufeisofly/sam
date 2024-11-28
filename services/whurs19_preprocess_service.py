@@ -58,7 +58,7 @@ class Whurs19PreprocessService(BasePreprocessService):
             'Forest': 248,
             'Industrial': 247,
             'Meadow': 246,
-            'Mountains': 245,
+            'Mountain': 245,
             'Park': 244,
             'Parking': 243,
             'Pond': 242,
