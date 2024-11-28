@@ -51,8 +51,9 @@ class OutputService():
         self.save_masks(reordered_result)
         # 保存标签映射
         self.save_type_map(ori_label_2_id_map)
-        # TODO 保存目标检测数据
+        # 保存目标检测数据
         self.save_detection_data(reordered_result, ori_label_2_id_map)
+        self.save_sam_result_data(reordered_result, ori_label_2_id_map)
         
 
     def reorder_result_data_type(self, result: ProcessResult) -> ProcessResult:
@@ -176,7 +177,30 @@ class OutputService():
         if len(annotations) > 0:
             with open(os.path.join(self._detection_ann_dir, data_type.value + '.json'), 'w') as f:
                 json.dump({'annotations': annotations, 'categories': categories}, f, indent=4)
+        
+    def save_sam_result_data(self, data: ProcessResult, ori_label_2_id_map: dict):
+        self._save_sam_result_data_item(data.train_result_list, DataType.TRAIN)
+        self._save_sam_result_data_item(data.val_result_list, DataType.VAL)
+        self._save_sam_result_data_item(data.test_result_list, DataType.TEST)
+        
+    def _save_sam_result_data_item(self, result_items: List[ProcessResultItem], data_type: DataType):
+        annotations = []
+        
+        for result_item in result_items:
+            image = Image.open(result_item.img_file_path)
+            for box_item in result_item.mask.box_items:
+                ann = {
+                    'image': self._get_detection_image_path(result_item, data_type=data_type),
+                    'image_size': [image.width, image.height],
+                    'confidence_value': str(box_item.confidence_value),
+                    'bbox': box_item.box_array_coco,
+                }
                 
+                annotations.append(ann)
+                
+        if len(annotations) > 0:
+            with open(os.path.join(self._output_ann_dir, data_type.value + '.json'), 'w') as f:
+                json.dump({'annotations': annotations}, f, indent=4)
                         
     def _get_detection_image_path(self, result_item: ProcessResultItem, data_type: DataType):
         return data_type.value + '/' + result_item.file_name_without_ext + '.tif'

@@ -8,6 +8,7 @@ class BoxItem():
         self._ori_label = ori_label
         self._box_array = box_array
         self._id = None
+        self._confidence_value = None
 
     @property
     def ori_label(self):
@@ -27,6 +28,13 @@ class BoxItem():
     
     def set_id(self, value):
         self._id = value
+        
+    @property
+    def confidence_value(self):
+        return self._confidence_value
+    
+    def set_confidence_value(self, value):
+        self._confidence_value = value
         
     def box_string(self):
         return '-'.join([str(x) for x in self._box_array])        

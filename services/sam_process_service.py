@@ -92,13 +92,15 @@ class SamProcessService():
         ret = []
         mask = None
         for box_item in item.box_items:
-            mask_arrs, _ = process_box_prompt(predictor, box_item.box_array)
+            mask_arrs, scores = process_box_prompt(predictor, box_item.box_array)
             if mask_arrs is None or len(mask_arrs) == 0:
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
+            score = scores[0]
             id = self._ori_label_2_id_map[box_item.ori_label]
-            # 设置 box 对应的 id
+            # 设置 box 对应的 id 和置信度值
             box_item.set_id(id)
+            box_item.set_confidence_value(score)
             if merge_mask:
                 if mask is None:
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
