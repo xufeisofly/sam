@@ -87,7 +87,9 @@ class SamProcessService():
 
         predictor = SamPredictor(sam)
         # slow
+        logger.info("--------1")
         predictor.set_image(image)
+        logger.info("--------2")
 
         ret = []
         mask = None
@@ -113,7 +115,8 @@ class SamProcessService():
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type,
                                              mask_img_file_path=mask_img_file_path))
-                
+           
+        logger.info("--------3")     
         return ret
 
 
