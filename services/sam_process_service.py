@@ -97,6 +97,7 @@ class SamProcessService():
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
             score = scores[0]
+
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id 和置信度值
             box_item.set_id(id)
@@ -113,7 +114,7 @@ class SamProcessService():
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type,
                                              mask_img_file_path=mask_img_file_path))
-                
+           
         return ret
 
 
