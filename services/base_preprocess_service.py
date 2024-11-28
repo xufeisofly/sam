@@ -1,8 +1,6 @@
 # coding: utf-8
 from abc import ABC, abstractmethod
 from schemas.preprocess_result import PreprocessResult
-from typing import List
-
 
 class BasePreprocessService(ABC):
     def __init__(self, dataset_path=None) -> None:
@@ -15,7 +13,6 @@ class BasePreprocessService(ABC):
     @abstractmethod
     def ori_label_2_id_map(self, label: str) -> dict:
         pass
-        
 
 class PreprocessFactory():
     def create(self, service_name: str, dataset_path=None) -> BasePreprocessService:
@@ -31,5 +28,8 @@ class PreprocessFactory():
         elif service_name == "WHU-RS19":
             from services.whurs19_preprocess_service import Whurs19PreprocessService
             return Whurs19PreprocessService(dataset_path=dataset_path)
+        elif service_name == "HRSC":
+            from services.hrsc_preprocess_service import HRSCPreprocessService
+            return HRSCPreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
