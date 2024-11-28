@@ -22,7 +22,8 @@ class HRSCPreprocessService(BasePreprocessService):
         self.train_path = os.path.join(self._dataset_path, "ImageSets/train.txt")
         self.val_path = os.path.join(self._dataset_path, "ImageSets/val.txt")
 
-    def call(self, limit=sys.maxsize) -> PreprocessResult:
+    def call(self, limit=-1) -> PreprocessResult:
+        limit = limit if limit > 0 else sys.maxsize
         trains = self._get_dataset_from_file(self.train_path)
         tests = self._get_dataset_from_file(self.test_path)
         vals = self._get_dataset_from_file(self.val_path)
@@ -76,43 +77,6 @@ class HRSCPreprocessService(BasePreprocessService):
                 dataset.add(line)
         return dataset
 
-    def _get_result_from_anno_file(self, anno_file_path: str, data_type: DataType, limit=-1) -> PreprocessResult:
-        with open(anno_file_path, 'r') as file:
-            anno_dict = json.load(file)
-
-        grouped_box_data = self._group_box_data_by_image_id(anno_dict)
-
-        result = PreprocessResult()
-
-        counter = 0
-        for image_info in anno_dict["images"]:
-            file_name = image_info['file_name']
-            img_file_path = os.path.join(self._image_path, file_name)
-            if not self._has_file(img_file_path):
-                logger.error(f"{file_name} is not exist")
-                continue
-            image_id = image_info['id']
-            if image_id not in grouped_box_data:
-                logger.warning(f'{image_id} has no bounding boxes')
-                continue
-
-            result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=data_type)
-            for box_info in grouped_box_data[image_id]:
-                box_array = np.array(coco2box(box_info['bbox']))
-
-                result_item.append(BoxItem(
-                    ori_label=self._get_ori_label_by_token(box_info['category_id']),
-                    box_array=box_array))
-
-            result.append(result_item)
-            counter += 1
-            # 支持固定数量
-            if limit > 0 and counter >= limit:
-                break
-
-        return result
-
-
     def ori_label_2_id_map(self) -> dict:
         return {
             'ship': 255,
@@ -133,7 +97,7 @@ class HRSCPreprocessService(BasePreprocessService):
             'Tarawa-class amphibious assault ship': 240,
             'USS Blue Ridge (LCC-19)': 239,
             'Container ship': 238,
-            'OXo': 237,
+            'oXo': 237,
             'Car carrier': 236,
             'Hovercraft': 235,
             'yacht': 234,
