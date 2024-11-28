@@ -101,21 +101,24 @@ class SamProcessService():
                 raise Exception("No mask predicted")
             mask_arr = mask_arrs[0]
             
-            score = 100
+            score = 0
             if scores is not None and len(scores) != 0:
                 score = scores[0]
 
-            logger.info(f"-------- {score}")
+            logger.info(f"--------1 {score}")
             id = self._ori_label_2_id_map[box_item.ori_label]
             # 设置 box 对应的 id 和置信度值
             box_item.set_id(id)
+            logger.info(f"--------1.5 {score}")
             box_item.set_confidence_value(score)
+            logger.info(f"--------2 {score}")
             if merge_mask:
                 if mask is None:
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 else:
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
                 ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
+                logger.info(f"--------3 {score}")
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
