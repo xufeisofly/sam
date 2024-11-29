@@ -31,5 +31,8 @@ class PreprocessFactory():
         elif service_name == "HRSC":
             from services.hrsc_preprocess_service import HRSCPreprocessService
             return HRSCPreprocessService(dataset_path=dataset_path)
+        elif service_name == "SISI":
+            from services.sisi_preprocess_service import SISIPreprocessService
+            return SISIPreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
