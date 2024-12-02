@@ -6,22 +6,26 @@ import numpy as np
 from typing import List
 from schemas.preprocess_result import BoxItem
 from util.constant import DataType
-from util.box import calculate_island_area
+from util.box import box2coco, calculate_island_area
 from util.logger import logger
 
 
 class Mask():
-    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:
+    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
         """
         data: np.array([], dtype=np.boolean)
         """
-        if data.ndim != 2:
+        if data is not None and data.ndim != 2:
             raise ValueError("data must be a 2D numpy array")
         if id <= 0:
             raise ValueError("id must be greater than zero")
-        self._data = data.astype(int) * id
+        if data is not None:
+            self._data = data.astype(int) * id
+        else:
+            self._data = None
         self._count = 1
         self._img_file_path = img_file_path
+        self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
         self._id_count_map = {
             id: 1,
         }
@@ -31,6 +35,9 @@ class Mask():
     def update(self, mask: Mask) -> None:
         """合并两个 Mask
         """
+        if mask.data is None and self._data is None:
+            return
+        
         mask_new_region = (mask.data != 0) & (self._data == 0)
         overlap_region = (mask.data > 0) & (self._data > 0) & (self._data != mask.data)
 
@@ -64,9 +71,16 @@ class Mask():
                 self._id_count_map[k] = v
         self._box_items.extend(mask.box_items)
         
+        
+    @property
+    def mask_img_file_path(self) -> str:
+        return self._mask_img_file_path
+        
 
     @property
     def data(self) -> np.ndarray:
+        if self._data is None:
+            return None
         return self._data.astype(np.uint8)
     
     @property
@@ -87,28 +101,28 @@ class Mask():
     def img_file_path(self) -> str:
         return self._img_file_path
     
+    @property
+    def mask_img_file_path(self) -> str:
+        return self._mask_img_file_path
+    
+    @property
+    def mask_file_name_without_ext(self) -> str:
+        return self._mask_img_file_path.split("/")[-1].split(".")[0]
+    
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, mask_img_file_path:str = None):
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):
         self._img_file_path = img_file_path
-        self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
         self._mask = mask
         self._data_type = data_type # 原始数据类型 train, validation, test
 
     @property
     def file_name_without_ext(self) -> str:
         return self._img_file_path.split("/")[-1].split(".")[0]
-    
-    @property
-    def mask_file_name_without_ext(self) -> str:
-        return self._mask_img_file_path.split("/")[-1].split(".")[0]
 
     @property
     def img_file_path(self) -> str:
         return self._img_file_path
     
-    @property
-    def mask_img_file_path(self) -> str:
-        return self._mask_img_file_path
 
     @property
     def mask(self) -> Mask:
