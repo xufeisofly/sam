@@ -32,7 +32,7 @@ class Mask():
         """合并两个 Mask
         """
         mask_new_region = (mask.data != 0) & (self._data == 0)
-        overlap_region = (mask.data > 0) & (self._data > 0)
+        overlap_region = (mask.data > 0) & (self._data > 0) & (self._data != mask.data)
 
         # 更新新的区域
         self._data[mask_new_region] = mask.data[mask_new_region]

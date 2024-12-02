@@ -11,7 +11,13 @@ def coco2box(coco):
     return [coco[0], coco[1], coco[0]+coco[2], coco[1]+coco[3]]
 
 
-def calculate_island_area(grid: np.ndarray, x, y):
+def poly2box(poly) -> np.ndarray:
+    """取最小外接矩形
+    """
+    return np.array([int(min([p for p in poly[::2]])), int(min([p for p in poly[1::2]])), int(max([p for p in poly[::2]]))+1, int(max([p for p in poly[1::2]]))+1])
+
+
+def calculate_island_area2(grid: np.ndarray, x, y):
     """
     计算给定位置 (x, y) 所在小岛的面积，不修改原始 grid。
     :param grid: 二维数组，元素是 0 或 1
@@ -41,3 +47,45 @@ def calculate_island_area(grid: np.ndarray, x, y):
 
     # 开始计算小岛面积
     return dfs(x, y)
+
+
+def calculate_island_area(grid: np.ndarray, x, y):
+    """
+    计算给定位置 (x, y) 所在小岛的面积，不修改原始 grid。
+    :param grid: 二维数组，元素是 0 或 1
+    :param x: 起始行坐标
+    :param y: 起始列坐标
+    :return: 小岛的面积
+    """
+    if grid.size == 0 or grid[x, y] == 0:
+        return 0
+
+    rows, cols = grid.shape
+    visited = np.zeros((rows, cols), dtype=bool)
+    value = grid[x, y]
+
+    # 使用栈来模拟 DFS 过程
+    stack = [(x, y)]  # 初始位置入栈
+    visited[x, y] = True
+    area = 0
+
+    # 四个方向的移动
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    while stack:
+        i, j = stack.pop()  # 弹出栈顶元素
+        area += 1  # 当前点属于岛屿，面积加 1
+
+        # 遍历四个方向
+        for dx, dy in directions:
+            ni, nj = i + dx, j + dy
+
+            # 检查是否越界，是否已经访问过，或是否为岛屿
+            if 0 <= ni < rows and 0 <= nj < cols and not visited[ni, nj] and grid[ni, nj] == value:
+                visited[ni, nj] = True
+                stack.append((ni, nj))  # 将有效的邻居坐标加入栈中
+
+    return area
+
+
+

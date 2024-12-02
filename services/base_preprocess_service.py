@@ -34,5 +34,8 @@ class PreprocessFactory():
         elif service_name == "SISI":
             from services.sisi_preprocess_service import SISIPreprocessService
             return SISIPreprocessService(dataset_path=dataset_path)
+        elif service_name == "SODA-A":
+            from services.dior_sodaa_preprocess_service import DiorSodaAPreprocessService
+            return DiorSodaAPreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
