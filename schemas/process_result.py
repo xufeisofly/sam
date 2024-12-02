@@ -52,6 +52,8 @@ class Mask():
             # 如果旧小岛面积大于新小岛，更新重叠区域
             if old_id_size > new_id_size:
                 self._data[overlap_region] = new_id
+        else:
+            logger.debug(f"No overlapped")
         
         # self._data = np.where(self._data > mask.data, self._data, mask.data)
         self._count += 1
