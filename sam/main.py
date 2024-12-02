@@ -48,7 +48,7 @@ def main():
     parser.add_argument('--parallel_num', help='多进程数量，默认与 GPU 核数相同', default=0, type=int)
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
-    parser.add_argument('--chunk', help='分批处理', default=100, type=int)
+    parser.add_argument('--chunk', help='分批处理, -1=nochunk', default=100, type=int)
     parser.add_argument('--loglevel', type=str, default='INFO',
                     help='Set the log level. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL')
     args = parser.parse_args()
