@@ -13,7 +13,7 @@ def coco2box(coco):
 
 def calculate_island_area(grid: np.ndarray, x, y):
     """
-    计算给定位置 (x, y) 所在小岛的面积。
+    计算给定位置 (x, y) 所在小岛的面积，不修改原始 grid。
     :param grid: 二维数组，元素是 0 或 1
     :param x: 起始行坐标
     :param y: 起始列坐标
@@ -21,19 +21,20 @@ def calculate_island_area(grid: np.ndarray, x, y):
     """
     # 检查边界条件
     value = grid[x][y]
-    if not grid or not grid[0]:
+    if not grid.any() or value == 0:
         return 0
 
-    rows, cols = len(grid), len(grid[0])
+    rows, cols = grid.shape
+    visited = np.zeros_like(grid, dtype=bool)
 
     # 定义递归的 DFS 方法
     def dfs(i, j):
-        # 检查是否越界，是否已访问过（非 1）
-        if i < 0 or i >= rows or j < 0 or j >= cols or grid[i][j] != value:
+        # 检查是否越界，是否已访问过，或值不匹配
+        if i < 0 or i >= rows or j < 0 or j >= cols or visited[i][j] or grid[i][j] != value:
             return 0
 
-        # 将当前位置标记为已访问（避免重复计数）
-        grid[i][j] = 0
+        # 标记当前位置为已访问
+        visited[i][j] = True
 
         # 计算当前区域面积（1） + 四个方向的面积
         return 1 + dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1)
