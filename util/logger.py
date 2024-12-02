@@ -4,6 +4,7 @@ import sys
 logger = logging.getLogger('default')
 
 def setup_logger(level):
+    global logger
     logger.setLevel(level)
 
     handler = logging.StreamHandler(sys.stdout)
