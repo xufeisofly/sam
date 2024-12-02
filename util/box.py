@@ -11,6 +11,12 @@ def coco2box(coco):
     return [coco[0], coco[1], coco[0]+coco[2], coco[1]+coco[3]]
 
 
+def poly2box(poly):
+    """取最小外接矩形
+    """
+    return [int(min([p for p in poly[::2]])), int(min([p for p in poly[1::2]])), int(max([p for p in poly[::2]]))+1, int(max([p for p in poly[1::2]]))+1]
+
+
 def calculate_island_area(grid: np.ndarray, x, y):
     """
     计算给定位置 (x, y) 所在小岛的面积，不修改原始 grid。
