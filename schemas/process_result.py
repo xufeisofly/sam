@@ -11,7 +11,7 @@ from util.logger import logger
 
 
 class Mask():
-    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None) -> None:
+    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
         """
         data: np.array([], dtype=np.boolean)
         """
@@ -25,6 +25,7 @@ class Mask():
             self._data = None
         self._count = 1
         self._img_file_path = img_file_path
+        self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
         self._id_count_map = {
             id: 1,
         }
@@ -70,6 +71,11 @@ class Mask():
                 self._id_count_map[k] = v
         self._box_items.extend(mask.box_items)
         
+        
+    @property
+    def mask_img_file_path(self) -> str:
+        return self._mask_img_file_path
+        
 
     @property
     def data(self) -> np.ndarray:
@@ -95,37 +101,32 @@ class Mask():
     def img_file_path(self) -> str:
         return self._img_file_path
     
-class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, mask_img_file_path:str = None, box_items=None):
-        self._img_file_path = img_file_path
-        self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
-        self._mask = mask
-        self._data_type = data_type # 原始数据类型 train, validation, test
-        self._box_items = box_items if box_items is not None else []
-
     @property
-    def file_name_without_ext(self) -> str:
-        return self._img_file_path.split("/")[-1].split(".")[0]
+    def mask_img_file_path(self) -> str:
+        return self._mask_img_file_path
     
     @property
     def mask_file_name_without_ext(self) -> str:
         return self._mask_img_file_path.split("/")[-1].split(".")[0]
+    
+class ProcessResultItem():
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):
+        self._img_file_path = img_file_path
+        self._mask = mask
+        self._data_type = data_type # 原始数据类型 train, validation, test
+
+    @property
+    def file_name_without_ext(self) -> str:
+        return self._img_file_path.split("/")[-1].split(".")[0]
 
     @property
     def img_file_path(self) -> str:
         return self._img_file_path
     
-    @property
-    def mask_img_file_path(self) -> str:
-        return self._mask_img_file_path
 
     @property
     def mask(self) -> Mask:
         return self._mask
-    
-    @property
-    def box_items(self) -> List[BoxItem]:
-        return self._box_items
     
     @property
     def data_type(self) -> DataType:
