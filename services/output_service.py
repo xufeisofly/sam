@@ -2,6 +2,7 @@
 import __future__
 import os
 import json
+import random
 
 from schemas.process_result import ProcessResult, ProcessResultItem
 from util.constant import OUTPUT_DIR, DataType
@@ -78,6 +79,8 @@ class OutputService():
         id_counter = {}
         expected_id_count = self.get_val_expected_id_count_map(result)
         val_is_enough = False
+        # 打乱顺序，以便于后续的验证集采样
+        random.shuffle(result.train_result_list)
         for result_item in result.train_result_list:
             if not val_is_enough:
                 val_result.append(result_item)
