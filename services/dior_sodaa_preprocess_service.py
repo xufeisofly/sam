@@ -48,6 +48,9 @@ class DiorSodaAPreprocessService(BasePreprocessService):
             category_map = {c['id']: c['name'] for c in categories}
             
             img_file_path = os.path.join(self._image_path, anno_dict["images"]["file_name"])
+            if not self._has_file(img_file_path):
+                logger.warning(f'{img_file_path} does not exist')
+                continue
             result_item = PreprocessResultItem(img_file_path=img_file_path, data_type=data_type)
             for anno in anno_dict["annotations"]:
                 poly = anno['poly']
@@ -66,6 +69,10 @@ class DiorSodaAPreprocessService(BasePreprocessService):
                 break
             
         return result
+    
+    
+    def _has_file(self, file_path: str) -> bool:
+        return os.path.exists(file_path)
             
 
     def ori_label_2_id_map(self) -> dict:
