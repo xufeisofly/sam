@@ -4,7 +4,7 @@ import os
 import json
 import random
 
-from schemas.process_result import ProcessResult, ProcessResultItem
+from schemas.process_result import Mask, ProcessResult, ProcessResultItem
 from util.constant import OUTPUT_DIR, DataType
 from typing import Tuple, List
 from PIL import Image
@@ -49,12 +49,12 @@ class OutputService():
         self.clear_all()
         reordered_result = self.reorder_result_data_type(data)
         # 保存语义分割数据
-        self.save_masks(reordered_result)
+        # self.save_masks(reordered_result)
         # 保存标签映射
         self.save_type_map(ori_label_2_id_map)
         # 保存目标检测数据
         self.save_detection_data(reordered_result, ori_label_2_id_map)
-        self.save_sam_result_data(reordered_result, ori_label_2_id_map)
+        self.save_sam_result_data(reordered_result, ori_label_2_id_map)        
         
 
     def reorder_result_data_type(self, result: ProcessResult) -> ProcessResult:
@@ -160,7 +160,7 @@ class OutputService():
         annotations = []
         
         for result_item in result_items:
-            for box_item in result_item.mask.box_items:
+            for box_item in result_item.box_items:
                 ann = {
                     'image': self._get_detection_image_path(result_item, data_type=data_type),
                     'category_id': box_item.id,
@@ -191,7 +191,7 @@ class OutputService():
         
         for result_item in result_items:
             image = Image.open(result_item.img_file_path)
-            for box_item in result_item.mask.box_items:
+            for box_item in result_item.box_items:
                 ann = {
                     'image': self._get_detection_image_path(result_item, data_type=data_type),
                     'image_size': [image.width, image.height],
