@@ -39,7 +39,7 @@ class DiorSodaAPreprocessService(BasePreprocessService):
         
         result = PreprocessResult()
         counter = 0
-        for anno_file in all_json_files[:2]:
+        for anno_file in all_json_files:
             anno_file_path = os.path.join(anno_file_folder, anno_file)
             with open(anno_file_path, 'r') as file:
                 anno_dict = json.load(file)
