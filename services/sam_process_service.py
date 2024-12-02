@@ -123,7 +123,7 @@ class SamProcessService():
 
 
 def process_box_prompt(predictor: SamPredictor, input_box: np.ndarray):
-    logger.info(f"processing box: {input_box}")
+    logger.debug(f"processing box: {input_box}")
     masks, scores, _ = predictor.predict(
         point_coords=None,
         point_labels=None,
