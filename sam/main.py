@@ -1,11 +1,12 @@
 # coding: utf-8
 import argparse
 import sys
+import logging
 
 from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
-from util.logger import logger
+from util.logger import setup_logger, logger
 
 
 def main():
@@ -16,7 +17,14 @@ def main():
     parser.add_argument('--parallel_num', help='多进程数量', default=0, type=int)
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
+    parser.add_argument('--loglevel', type=str, default='INFO',
+                    help='Set the log level. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL')
     args = parser.parse_args()
+    
+    log_level = getattr(logging, args.loglevel.upper(), logging.DEBUG)
+
+    # 设置 logger
+    setup_logger(log_level)
     
     logger.info(f"==== 开始处理 {args.dataset}")
     preprocessor = PreprocessFactory().create(args.dataset, dataset_path=args.dataset_path)
