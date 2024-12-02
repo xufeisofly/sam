@@ -55,7 +55,6 @@ class DiorSodaAPreprocessService(BasePreprocessService):
                     logger.warning(f"skipping invalid polygon: {poly}")
                     continue
                 box_array = poly2box(poly)
-                logger.info(f"box array: {box_array}")
                 
                 result_item.append(BoxItem(
                     ori_label=category_map[anno['category_id']],
