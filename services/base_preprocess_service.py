@@ -40,5 +40,8 @@ class PreprocessFactory():
         elif service_name == "VHRShips":
             from services.vhrships_preprocess_service import VhrshipsPreprocessService
             return VhrshipsPreprocessService(dataset_path=dataset_path)
+        elif service_name == "LEVIR":
+            from services.levir_preprocess_service import LevirPreprocessService
+            return LevirPreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
