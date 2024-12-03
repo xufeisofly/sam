@@ -116,7 +116,6 @@ class SamProcessService():
     def _call_one_require_mask(self, item: PreprocessResultItem, use_gpu=False, merge_mask=True) -> List[ProcessResultItem]: 
         image = cv2.imread(item.img_file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        raise Exception("Not implemented yet")
 
         sam_checkpoint = os.path.join(CHECKPOINT_DIR, "sam_vit_h_4b8939.pth")
         model_type = "vit_h"
