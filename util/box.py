@@ -4,11 +4,11 @@ import numpy as np
 from typing import Tuple
 
 def box2coco(box):
-    return [int(box[0]), int(box[1]), int(box[2]-box[0]), int(box[3]-box[1])]
+    return np.array([int(box[0]), int(box[1]), int(box[2]-box[0]), int(box[3]-box[1])])
 
 
 def coco2box(coco):
-    return [coco[0], coco[1], coco[0]+coco[2], coco[1]+coco[3]]
+    return np.array([int(coco[0]), int(coco[1]), int(coco[0]+coco[2]), int(coco[1]+coco[3])])
 
 
 def poly2box(poly) -> np.ndarray:
