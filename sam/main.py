@@ -72,6 +72,7 @@ def main():
     classified_process_result, classify_dict = output_service.classify_result(process_result_without_masks)
     output_service.save_rest(classified_process_result, preprocessor.ori_label_2_id_map())
     
+    logger.info(f"==== 完成 rest 数据保存 {args.dataset}")
 
     total = len(preprocess_result)
     chunk = args.chunk if args.chunk > 0 else total
