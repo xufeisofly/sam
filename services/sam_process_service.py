@@ -98,17 +98,17 @@ class SamProcessService():
         for box_item in item.box_items:
             id = self._ori_label_2_id_map[box_item.ori_label]
             box_item.set_id(id)
-            if merge_mask:
-                if mask is None:
-                    mask = Mask(item.img_file_path, None, id, box_items=[box_item])
-                else:
-                    mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
-                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
+
+            if mask is None:
+                mask = Mask(item.img_file_path, None, id, box_items=[box_item])
             else:
-                ext = item.img_file_path.split("/")[-1].split(".")[1]
-                mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
-                mask = Mask(item.img_file_path, None, id, box_items=[box_item], mask_img_file_path=mask_img_file_path)
-                ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type))
+                mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
+            ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
+            # else:
+            #     ext = item.img_file_path.split("/")[-1].split(".")[1]
+            #     mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
+            #     mask = Mask(item.img_file_path, None, id, box_items=[box_item], mask_img_file_path=mask_img_file_path)
+            #     ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type))
            
         return ret
     
