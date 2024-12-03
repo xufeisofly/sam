@@ -5,6 +5,7 @@ import torch
 import matplotlib.pyplot as plt
 import cv2
 import os
+import warnings
 
 from segment_anything import sam_model_registry, SamPredictor
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem
@@ -35,6 +36,8 @@ class SamProcessService():
         self._parallel_num = parallel_num
         
         logger.info(f"Using {parallel_num} concurrent processes")
+
+        warnings.filterwarnings("ignore", category=FutureWarning)
         
     def get_result(self, data: PreprocessResult, merge_mask=True, limit=100, offset=0) -> ProcessResult:
         result = ProcessResult()
