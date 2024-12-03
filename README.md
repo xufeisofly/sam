@@ -12,7 +12,8 @@ pip install -e .
 # Run
 
 ```
-usage: sam [-h] [--dataset_path DATASET_PATH] [--use_gpu USE_GPU] [--parallel_num PARALLEL_NUM] [--limit LIMIT] [--merge_mask MERGE_MASK]
+usage: sam [-h] [--dataset_path DATASET_PATH] [--use_gpu USE_GPU] [--parallel_num PARALLEL_NUM] [--limit LIMIT] [--merge_mask MERGE_MASK] [--chunk CHUNK]
+           [--loglevel LOGLEVEL]
            dataset
 
 positional arguments:
@@ -24,10 +25,12 @@ options:
                         指定数据集路径，不设置的话使用默认
   --use_gpu USE_GPU     是否使用 gpu
   --parallel_num PARALLEL_NUM
-                        多进程数量
+                        多进程数量，默认与 GPU 核数相同
   --limit LIMIT         图片处理数量 for train, val, test，默认处理所有
   --merge_mask MERGE_MASK
                         是否合并 mask 文件
+  --chunk CHUNK         分批处理, -1=nochunk
+  --loglevel LOGLEVEL   Set the log level. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
 正式运行
@@ -46,6 +49,12 @@ sam MAR20 --dataset_path /data/mar20
 ```
 sam MAR20 --limit 100
 ```
+chunk 参数可以分批次运行 sam 处理，默认为 100，当图片很多时可以节省内存，如果设置为 -1 时会一次性读到内存，然后进行处理
+```
+sam MAR20 --chunk=-1
+```
+
+设置了 chunk 后运行一旦出错，会在 {dataset}_fail.json 中记录出错的 chunk 断点，方便修复错误后继续运行
 
 # 预查看分割效果
 
