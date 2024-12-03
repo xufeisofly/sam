@@ -16,11 +16,8 @@ from typing import List
 
 
 class SamProcessService():
-    def __init__(self, ori_label_2_id_map: dict) -> None:
+    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
-        
-    def get_result(self, data: PreprocessResult, use_gpu: False, parallel_num=0, merge_mask=True, limit=100, offset=0) -> ProcessResult:
-        result = ProcessResult()
         num_gpus = 0
         if use_gpu:
             num_gpus = torch.cuda.device_count()
@@ -33,18 +30,23 @@ class SamProcessService():
                 parallel_num = num_gpus
             else:
                 parallel_num = 1
-
-            
+        self._num_gpus = num_gpus
+        self._use_gpu = use_gpu
+        self._parallel_num = parallel_num
+        
         logger.info(f"Using {parallel_num} concurrent processes")
+        
+    def get_result(self, data: PreprocessResult, merge_mask=True, limit=100, offset=0) -> ProcessResult:
+        result = ProcessResult()
         
         # 创建进程池
         try:
-            with ProcessPoolExecutor(max_workers=parallel_num) as executor:
+            with ProcessPoolExecutor(max_workers=self._parallel_num) as executor:
                 futures = []
                 for i, item in enumerate(data.result_list[offset:limit+offset]):
                     try:
-                        if use_gpu:
-                            gpu_id = i % num_gpus
+                        if self._use_gpu:
+                            gpu_id = i % self._num_gpus
                             future = executor.submit(self._call_on_gpu, gpu_id, item, merge_mask=merge_mask)
                         else:
                             future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
