@@ -36,13 +36,6 @@ class SamProcessService():
         
         logger.info(f"Using {parallel_num} concurrent processes")
         
-        sam_checkpoint = os.path.join(CHECKPOINT_DIR, "sam_vit_h_4b8939.pth")
-        model_type = "vit_h"
-
-        self._sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
-        if use_gpu:
-            self._sam.to(device="cuda")
-        
     def get_result(self, data: PreprocessResult, merge_mask=True, limit=100, offset=0) -> ProcessResult:
         result = ProcessResult()
         
@@ -121,7 +114,14 @@ class SamProcessService():
         image = cv2.imread(item.img_file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        predictor = SamPredictor(self._sam)
+        sam_checkpoint = os.path.join(CHECKPOINT_DIR, "sam_vit_h_4b8939.pth")
+        model_type = "vit_h"
+
+        sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+        if use_gpu:
+            sam.to(device="cuda")
+
+        predictor = SamPredictor(sam)
         # slow
         predictor.set_image(image)
 
