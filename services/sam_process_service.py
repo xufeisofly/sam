@@ -57,7 +57,7 @@ class SamProcessService():
                     except Exception as e:
                         torch.cuda.empty_cache()  # 清理缓存
                         logger.error(f"Exception occurred: {e}. Retrying...")
-                        raise
+                        raise e
 
                 # 等待所有任务完成
                 for future in futures:
@@ -67,7 +67,7 @@ class SamProcessService():
         except KeyboardInterrupt:
             logger.warning("Keyboard interrupt detected. Exiting.")
             executor.shutdown(wait=False, cancel_futures=True)
-            raise
+            raise e
 
         return result
     
@@ -116,6 +116,7 @@ class SamProcessService():
     def _call_one_require_mask(self, item: PreprocessResultItem, use_gpu=False, merge_mask=True) -> List[ProcessResultItem]: 
         image = cv2.imread(item.img_file_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        raise Exception("Not implemented yet")
 
         sam_checkpoint = os.path.join(CHECKPOINT_DIR, "sam_vit_h_4b8939.pth")
         model_type = "vit_h"
