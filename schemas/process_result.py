@@ -2,12 +2,17 @@
 from __future__ import annotations
 
 import numpy as np
+import os
+import pickle
+import weakref
+from pathlib import Path
 
 from typing import List
 from schemas.preprocess_result import BoxItem
-from util.constant import DataType
+from util.constant import DataType, ROOT_DIR
 from util.box import box2coco, calculate_island_area
 from util.logger import logger
+from util.file import get_file_name_without_ext
 
 
 class Mask():
@@ -107,17 +112,61 @@ class Mask():
     
     @property
     def mask_file_name_without_ext(self) -> str:
-        return self._mask_img_file_path.split("/")[-1].split(".")[0]
+        return get_file_name_without_ext(self._mask_img_file_path)
+    
     
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN):
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, disk_for_mask=False):
         self._img_file_path = img_file_path
-        self._mask = mask
+        if not disk_for_mask:
+            self._mask = mask
+        else:
+            self._mask_file_path = self._generate_mask_file_path(img_file_path)
+            self._save_mask_to_disk(mask)
+            self._register_cleanup()
+        self._use_disk = disk_for_mask
         self._data_type = data_type # 原始数据类型 train, validation, test
+        
+    @staticmethod
+    def _generate_mask_file_path(img_file_path: str) -> str:
+        """
+        根据 img_file_path 生成 mask 文件路径。
+        例如，将原始文件扩展名替换为 '.mask.pkl'。
+        """
+        return str(Path(
+            os.path.join(ROOT_DIR, 'tmp', get_file_name_without_ext(img_file_path)))
+            .with_suffix('.mask.pkl'))
+    
+    def _save_mask_to_disk(self, mask: 'Mask'):
+        """
+        将 Mask 对象序列化并保存到硬盘。
+        """
+        with open(self._mask_file_path, 'wb') as f:
+            pickle.dump(mask, f)
+        logger.debug(f"Mask 已保存到磁盘: {self._mask_file_path}")
+        
+    def _cleanup(self):
+        """
+        删除硬盘上的 mask 文件。
+        """
+        if Path(self._mask_file_path).exists():
+            try:
+                os.remove(self._mask_file_path)
+                logger.debug(f"删除临时文件: {self._mask_file_path}")
+            except OSError as e:
+                logger.debug(f"删除文件失败: {e}")
+        
+    def _register_cleanup(self):
+        """
+        注册对象回收时的清理函数。
+        使用弱引用管理清理，避免阻止对象回收。
+        """
+        weakref.finalize(self, self._cleanup)
 
     @property
     def file_name_without_ext(self) -> str:
-        return self._img_file_path.split("/")[-1].split(".")[0]
+        return get_file_name_without_ext(self._img_file_path)
+    
 
     @property
     def img_file_path(self) -> str:
@@ -126,17 +175,29 @@ class ProcessResultItem():
 
     @property
     def mask(self) -> Mask:
+        if self._use_disk:
+            return self._load_mask_from_disk()
         return self._mask
+    
+    def _load_mask_from_disk(self) -> Mask:
+        """
+        从硬盘加载 Mask 对象。
+        """
+        if not Path(self._mask_file_path).exists():
+            raise FileNotFoundError(f"Mask file not found: {self._mask_file_path}")
+        with open(self._mask_file_path, 'rb') as f:
+            logger.debug(f"从磁盘加载 Mask: {self._mask_file_path}")
+            return pickle.load(f)
     
     @property
     def data_type(self) -> DataType:
         return self._data_type
     
     def get_id_count_map(self) -> dict:
-        return self._mask.get_id_count_map()
+        return self.mask.get_id_count_map()
     
     def get_ids(self) -> List[int]:
-        return list(self._mask.get_id_count_map().keys())
+        return list(self.mask.get_id_count_map().keys())
 
 
 class ProcessResult():

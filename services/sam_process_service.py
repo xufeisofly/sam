@@ -11,13 +11,15 @@ from segment_anything import sam_model_registry, SamPredictor
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem
 from schemas.process_result import Mask, ProcessResultItem, ProcessResult, Mask
 from util.constant import CHECKPOINT_DIR
-from util.logger import logger
+from util.logger import logger, init_logging
 from concurrent.futures import ProcessPoolExecutor
 from typing import List
 
+MAX_MASKS_MEMORY_SIZE_PER_IMG = 1024 * 1024 * 512 # 512MB
+
 
 class SamProcessService():
-    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None) -> None:
+    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None, low_memory=False) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
         self._gpu_ids = [] if gpu_ids is None else gpu_ids
         num_gpus = 0
@@ -39,7 +41,7 @@ class SamProcessService():
         self._num_gpus = num_gpus
         self._use_gpu = use_gpu
         self._parallel_num = parallel_num
-        
+        self._low_memory = low_memory
         
         if len(self._gpu_ids) > 0 and not use_gpu:
             raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
@@ -57,7 +59,7 @@ class SamProcessService():
         
         # 创建进程池
         try:
-            with ProcessPoolExecutor(max_workers=self._parallel_num) as executor:
+            with ProcessPoolExecutor(max_workers=self._parallel_num, initializer=init_logging) as executor:
                 futures = []
                 for i, item in enumerate(data.result_list[offset:limit+offset]):
                     try:
@@ -70,8 +72,8 @@ class SamProcessService():
                         else:
                             future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
                         futures.append(future)
-                    except Exception as e:
-                        torch.cuda.empty_cache()  # 清理缓存
+                    except BaseException as e:
+                        # torch.cuda.empty_cache()  # 清理缓存
                         logger.error(f"Exception occurred: {e}. Retrying...")
                         raise e
 
@@ -121,12 +123,6 @@ class SamProcessService():
             else:
                 mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
             ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
-            # else:
-            #     ext = item.img_file_path.split("/")[-1].split(".")[1]
-            #     mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
-            #     mask = Mask(item.img_file_path, None, id, box_items=[box_item], mask_img_file_path=mask_img_file_path)
-            #     ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type))
-           
         return ret
     
 
@@ -147,6 +143,10 @@ class SamProcessService():
 
         ret = []
         mask = None
+        
+        disk_for_mask, total_masks_size = self._get_if_use_disk_for_mask(image.nbytes, len(item.box_items), merge_mask)                    
+        logger.debug(f"disk_for_mask: {disk_for_mask}, total_masks_size: {total_masks_size / 1024 } KB")
+        
         for box_item in item.box_items:
             mask_arrs, scores = process_box_prompt(predictor, box_item.box_array)
             if mask_arrs is None or len(mask_arrs) == 0:
@@ -163,14 +163,32 @@ class SamProcessService():
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 else:
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
-                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
+                ret = [ProcessResultItem(
+                    img_file_path=item.img_file_path, 
+                    mask=mask, 
+                    data_type=item.data_type,
+                    disk_for_mask=disk_for_mask)]
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item], mask_img_file_path=mask_img_file_path)
-                ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type))
+                ret.append(ProcessResultItem(
+                    img_file_path=item.img_file_path, 
+                    mask=mask, 
+                    data_type=item.data_type, 
+                    disk_for_mask=disk_for_mask))
            
         return ret
+    
+    def _get_if_use_disk_for_mask(self, image_nbytes, box_items_number, merge_mask=True):
+        disk_for_mask = self._low_memory
+        ball_park_size = 0
+        if not disk_for_mask and merge_mask:
+            mask_nbytes = image_nbytes / 3
+            ball_park_size = mask_nbytes * len(box_items_number)
+            if ball_park_size > MAX_MASKS_MEMORY_SIZE_PER_IMG:
+                disk_for_mask = True
+        return disk_for_mask, ball_park_size
 
 
 def process_box_prompt(predictor: SamPredictor, input_box: np.ndarray):
