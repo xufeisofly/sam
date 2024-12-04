@@ -65,7 +65,11 @@ def main():
     
     logger.info(f"==== 完成预处理 {args.dataset}")
 
-    processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map(), use_gpu=args.use_gpu, parallel_num=args.parallel_num)
+    processor = SamProcessService(
+        ori_label_2_id_map=preprocessor.ori_label_2_id_map(), 
+        use_gpu=args.use_gpu, 
+        parallel_num=args.parallel_num, 
+        gpu_ids=args.gpu_ids.split(','))
     output_service = OutputService(args.dataset)
     output_service.clear_output()
     process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))

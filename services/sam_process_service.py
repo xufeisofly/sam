@@ -36,6 +36,13 @@ class SamProcessService():
         self._parallel_num = parallel_num
         self._gpu_ids = [] if gpu_ids is None else gpu_ids
         
+        if len(gpu_id) > 0 and not use_gpu:
+            raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
+        
+        for gpu_id in self._gpu_ids:
+            if gpu_id >= num_gpus:
+                raise ValueError(f"Invalid GPU ID: {gpu_id}, must be less than the number of available GPUs ({num_gpus})")
+        
         logger.info(f"Using {parallel_num} concurrent processes")
 
         warnings.filterwarnings("ignore", category=FutureWarning)
