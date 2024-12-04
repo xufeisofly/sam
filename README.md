@@ -13,7 +13,7 @@ pip install -e .
 
 ```
 usage: sam [-h] [--dataset_path DATASET_PATH] [--use_gpu USE_GPU] [--gpu_ids GPU_IDS] [--parallel_num PARALLEL_NUM] [--limit LIMIT] [--merge_mask MERGE_MASK]
-           [--chunk CHUNK] [--loglevel LOGLEVEL]
+           [--chunk CHUNK] [--low_memory LOW_MEMORY] [--loglevel LOGLEVEL]
            dataset
 
 positional arguments:
@@ -31,6 +31,8 @@ options:
   --merge_mask MERGE_MASK
                         是否合并 mask 文件
   --chunk CHUNK         分批处理, -1=nochunk
+  --low_memory LOW_MEMORY
+                        低内存模式，会将部分大变量通过硬盘读取 0-默认模式，1-低内存模式
   --loglevel LOGLEVEL   Set the log level. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
