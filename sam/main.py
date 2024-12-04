@@ -8,6 +8,7 @@ import os
 from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
+import torch
 from util.logger import setup_logger, logger
 
 
@@ -106,6 +107,10 @@ def main():
     logger.info(f"==== Masks 处理完毕 {args.dataset}") 
     
     sys.exit(0)
+    
+    
+def list_gpu_ids():
+    print(','.join([str(i) for i in range(torch.cuda.device_count())]))
     
 
 if __name__ == "__main__":

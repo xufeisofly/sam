@@ -7,6 +7,7 @@ setup(
         'console_scripts': [
             'sam = sam.main:main',
             'show-box = sam.show_box:show_box'
+            'list-gpu-ids = sam.main:list_gpu_ids'
         ]
     },
     packages=find_packages(),
