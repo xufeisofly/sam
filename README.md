@@ -12,8 +12,8 @@ pip install -e .
 # Run
 
 ```
-usage: sam [-h] [--dataset_path DATASET_PATH] [--use_gpu USE_GPU] [--parallel_num PARALLEL_NUM] [--limit LIMIT] [--merge_mask MERGE_MASK] [--chunk CHUNK]
-           [--loglevel LOGLEVEL]
+usage: sam [-h] [--dataset_path DATASET_PATH] [--use_gpu USE_GPU] [--gpu_ids GPU_IDS] [--parallel_num PARALLEL_NUM] [--limit LIMIT] [--merge_mask MERGE_MASK]
+           [--chunk CHUNK] [--loglevel LOGLEVEL]
            dataset
 
 positional arguments:
@@ -24,6 +24,7 @@ options:
   --dataset_path DATASET_PATH
                         指定数据集路径，不设置的话使用默认
   --use_gpu USE_GPU     是否使用 gpu
+  --gpu_ids GPU_IDS     指定 gpu id eg 0,1,2,3 使用 list-gpu-ids 命令获取全部 gpu ids，仅 use_gpu=1 时生效
   --parallel_num PARALLEL_NUM
                         多进程数量，默认与 GPU 核数相同
   --limit LIMIT         图片处理数量 for train, val, test，默认处理所有
