@@ -163,7 +163,7 @@ class SamProcessService():
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 else:
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
-                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
+                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type, use_disk=merge_mask)]
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
