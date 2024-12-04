@@ -15,9 +15,11 @@ from util.logger import logger
 from concurrent.futures import ProcessPoolExecutor
 from typing import List
 
+MAX_MASKS_MEMORY_SIZE_PER_IMG = 1024 * 1024 * 512 # 512MB
+
 
 class SamProcessService():
-    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None) -> None:
+    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None, low_memory=False) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
         self._gpu_ids = [] if gpu_ids is None else gpu_ids
         num_gpus = 0
@@ -39,7 +41,7 @@ class SamProcessService():
         self._num_gpus = num_gpus
         self._use_gpu = use_gpu
         self._parallel_num = parallel_num
-        
+        self._low_memory = low_memory
         
         if len(self._gpu_ids) > 0 and not use_gpu:
             raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
@@ -147,6 +149,9 @@ class SamProcessService():
 
         ret = []
         mask = None
+        
+        disk_for_mask = self._get_if_use_disk_for_mask(image.nbytes, len(item.box_items), merge_mask)                    
+        
         for box_item in item.box_items:
             mask_arrs, scores = process_box_prompt(predictor, box_item.box_array)
             if mask_arrs is None or len(mask_arrs) == 0:
@@ -163,14 +168,31 @@ class SamProcessService():
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 else:
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
-                ret = [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type, disk_for_mask=(not merge_mask))]
+                ret = [ProcessResultItem(
+                    img_file_path=item.img_file_path, 
+                    mask=mask, 
+                    data_type=item.data_type,
+                    disk_for_mask=disk_for_mask)]
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
                 mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item], mask_img_file_path=mask_img_file_path)
-                ret.append(ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type))
+                ret.append(ProcessResultItem(
+                    img_file_path=item.img_file_path, 
+                    mask=mask, 
+                    data_type=item.data_type, 
+                    disk_for_mask=disk_for_mask))
            
         return ret
+    
+    def _get_if_use_disk_for_mask(self, image_nbytes, box_items_number, merge_mask=True):
+        disk_for_mask = self._low_memory
+        if not disk_for_mask and merge_mask:
+            mask_nbytes = image_nbytes / 3
+            ball_park_size = mask_nbytes * len(box_items_number)
+            if ball_park_size > MAX_MASKS_MEMORY_SIZE_PER_IMG:
+                disk_for_mask = True
+        return disk_for_mask
 
 
 def process_box_prompt(predictor: SamPredictor, input_box: np.ndarray):

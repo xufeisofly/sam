@@ -51,6 +51,7 @@ def main():
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
     parser.add_argument('--chunk', help='分批处理, -1=nochunk', default=100, type=int)
+    parser.add_argument('--low_memory', help='低内存模式，会将部分大变量通过硬盘读取 0-默认模式，1-低内存模式', default=0, type=int)
     parser.add_argument('--loglevel', type=str, default='INFO',
                     help='Set the log level. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL')
     args = parser.parse_args()
@@ -71,7 +72,8 @@ def main():
         ori_label_2_id_map=preprocessor.ori_label_2_id_map(), 
         use_gpu=args.use_gpu, 
         parallel_num=args.parallel_num, 
-        gpu_ids=gpu_ids)
+        gpu_ids=gpu_ids,
+        low_memory=bool(args.low_memory)
     output_service = OutputService(args.dataset)
     output_service.clear_output()
     process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))
