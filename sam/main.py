@@ -73,7 +73,7 @@ def main():
         use_gpu=args.use_gpu, 
         parallel_num=args.parallel_num, 
         gpu_ids=gpu_ids,
-        low_memory=bool(args.low_memory)
+        low_memory=bool(args.low_memory))
     output_service = OutputService(args.dataset)
     output_service.clear_output()
     process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))

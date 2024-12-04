@@ -189,10 +189,10 @@ class ProcessResultItem():
         return self._data_type
     
     def get_id_count_map(self) -> dict:
-        return self._mask.get_id_count_map()
+        return self.mask.get_id_count_map()
     
     def get_ids(self) -> List[int]:
-        return list(self._mask.get_id_count_map().keys())
+        return list(self.mask.get_id_count_map().keys())
 
 
 class ProcessResult():
