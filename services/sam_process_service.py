@@ -36,7 +36,7 @@ class SamProcessService():
         self._parallel_num = parallel_num
         self._gpu_ids = [] if gpu_ids is None else gpu_ids
         
-        if len(gpu_id) > 0 and not use_gpu:
+        if len(self._gpu_ids) > 0 and not use_gpu:
             raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
         
         for gpu_id in self._gpu_ids:
