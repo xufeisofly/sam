@@ -9,3 +9,5 @@ build/
 *.log
 *_fail.json
 .DS_Store
+tmp/*
+!tmp
