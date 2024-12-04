@@ -114,15 +114,15 @@ class Mask():
         return self._mask_img_file_path.split("/")[-1].split(".")[0]
     
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, use_disk=False):
+    def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, disk_for_mask=False):
         self._img_file_path = img_file_path
-        if not use_disk:
+        if not disk_for_mask:
             self._mask = mask
         else:
             self._mask_file_path = self._generate_mask_file_path(img_file_path)
             self._save_mask_to_disk(mask)
             self._register_cleanup()
-        self._use_disk = use_disk
+        self._use_disk = disk_for_mask
         self._data_type = data_type # 原始数据类型 train, validation, test
         
     @staticmethod
