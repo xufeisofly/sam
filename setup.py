@@ -6,7 +6,7 @@ setup(
     entry_points={
         'console_scripts': [
             'sam = sam.main:main',
-            'show-box = sam.show_box:show_box'
+            'show-box = sam.show_box:show_box',
             'list-gpu-ids = sam.main:list_gpu_ids'
         ]
     },

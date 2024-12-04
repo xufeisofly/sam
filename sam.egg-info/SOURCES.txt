@@ -14,10 +14,16 @@ schemas/process_result.py
 services/__init__.py
 services/base_preprocess_service.py
 services/bridge_preprocess_service.py
+services/dior_sodaa_preprocess_service.py
 services/dior_sodad_preprocess_service.py
+services/hrsc_preprocess_service.py
+services/levir_preprocess_service.py
 services/mars20_preprocess_service.py
 services/output_service.py
 services/sam_process_service.py
+services/sisi_preprocess_service.py
+services/vhrships_preprocess_service.py
+services/whurs19_preprocess_service.py
 util/__init__.py
 util/box.py
 util/constant.py
