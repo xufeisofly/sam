@@ -45,6 +45,7 @@ def main():
     parser.add_argument('dataset', help='数据集名称', default='MAR20', type=str)
     parser.add_argument('--dataset_path', help='指定数据集路径，不设置的话使用默认', default=None, type=str)
     parser.add_argument('--use_gpu', help='是否使用 gpu', default=1, type=int)
+    parser.add_argument('--gpu_ids', help='指定 gpu id eg 0,1,2,3', default='', type=str)
     parser.add_argument('--parallel_num', help='多进程数量，默认与 GPU 核数相同', default=0, type=int)
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
@@ -64,7 +65,11 @@ def main():
     
     logger.info(f"==== 完成预处理 {args.dataset}")
 
-    processor = SamProcessService(ori_label_2_id_map=preprocessor.ori_label_2_id_map(), use_gpu=args.use_gpu, parallel_num=args.parallel_num)
+    processor = SamProcessService(
+        ori_label_2_id_map=preprocessor.ori_label_2_id_map(), 
+        use_gpu=args.use_gpu, 
+        parallel_num=args.parallel_num, 
+        gpu_ids=args.gpu_ids.split(','))
     output_service = OutputService(args.dataset)
     output_service.clear_output()
     process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))

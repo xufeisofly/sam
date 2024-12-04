@@ -17,7 +17,7 @@ from typing import List
 
 
 class SamProcessService():
-    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0) -> None:
+    def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
         num_gpus = 0
         if use_gpu:
@@ -34,6 +34,14 @@ class SamProcessService():
         self._num_gpus = num_gpus
         self._use_gpu = use_gpu
         self._parallel_num = parallel_num
+        self._gpu_ids = [] if gpu_ids is None else gpu_ids
+        
+        if len(gpu_id) > 0 and not use_gpu:
+            raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
+        
+        for gpu_id in self._gpu_ids:
+            if gpu_id >= num_gpus:
+                raise ValueError(f"Invalid GPU ID: {gpu_id}, must be less than the number of available GPUs ({num_gpus})")
         
         logger.info(f"Using {parallel_num} concurrent processes")
 
@@ -49,7 +57,10 @@ class SamProcessService():
                 for i, item in enumerate(data.result_list[offset:limit+offset]):
                     try:
                         if self._use_gpu:
-                            gpu_id = i % self._num_gpus
+                            if not self._gpu_ids:
+                                gpu_id = i % self._num_gpus
+                            else:
+                                gpu_id = self._gpu_ids[i % len(self._gpu_ids)]
                             future = executor.submit(self._call_on_gpu, gpu_id, item, merge_mask=merge_mask)
                         else:
                             future = executor.submit(self._call_on_cpu, item, merge_mask=merge_mask)         
@@ -83,6 +94,7 @@ class SamProcessService():
 
     
     def _call_on_gpu(self, gpu_id, item, merge_mask=True):
+        logger.debug(f"GPU ID: {gpu_id}")
         torch.cuda.set_device(gpu_id)
         return self._call_one_require_mask(item, use_gpu=True, merge_mask=merge_mask)  # 调用你的单项处理逻辑
     
