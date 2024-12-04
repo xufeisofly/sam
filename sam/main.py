@@ -45,6 +45,7 @@ def main():
     parser.add_argument('dataset', help='数据集名称', default='MAR20', type=str)
     parser.add_argument('--dataset_path', help='指定数据集路径，不设置的话使用默认', default=None, type=str)
     parser.add_argument('--use_gpu', help='是否使用 gpu', default=1, type=int)
+    parser.add_argument('--gpu_ids', help='指定 gpu id eg 0,1,2,3', default='', type=str)
     parser.add_argument('--parallel_num', help='多进程数量，默认与 GPU 核数相同', default=0, type=int)
     parser.add_argument('--limit', help='图片处理数量 for train, val, test，默认处理所有', default=-1, type=int)
     parser.add_argument('--merge_mask', help='是否合并 mask 文件', default=1, type=int)
