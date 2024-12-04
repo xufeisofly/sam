@@ -9,7 +9,7 @@ from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
 from services.output_service import OutputService
 import torch
-from util.logger import setup_logger, logger
+from util.logger import init_logging, logger, loglevel, set_loglevel
 
 
 def process_failure(dataset, e: Exception, offset, chunk, classify_dict):
@@ -59,9 +59,10 @@ def main():
     log_level = getattr(logging, args.loglevel.upper(), logging.DEBUG)
 
     # 设置 logger
-    setup_logger(log_level)
+    set_loglevel(log_level)
+    init_logging()
     
-    logger.info(f"==== 开始处理 {args.dataset}")
+    logger.debug(f"==== 开始处理 {args.dataset}")
     preprocessor = PreprocessFactory().create(args.dataset, dataset_path=args.dataset_path)
     preprocess_result = preprocessor.call(limit=args.limit)
     
@@ -100,7 +101,7 @@ def main():
             
             logger.info(f"==== 处理并保存 Masks 成功 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
             offset += chunk
-        except Exception as e:            
+        except BaseException as e:            
             logger.error(f"==== 处理并保存 Masks 失败 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
             process_failure(args.dataset, e, offset, chunk, classify_dict)
             offset += chunk

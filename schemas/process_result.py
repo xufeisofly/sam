@@ -9,9 +9,10 @@ from pathlib import Path
 
 from typing import List
 from schemas.preprocess_result import BoxItem
-from util.constant import DataType
+from util.constant import DataType, ROOT_DIR
 from util.box import box2coco, calculate_island_area
 from util.logger import logger
+from util.file import get_file_name_without_ext
 
 
 class Mask():
@@ -111,7 +112,8 @@ class Mask():
     
     @property
     def mask_file_name_without_ext(self) -> str:
-        return self._mask_img_file_path.split("/")[-1].split(".")[0]
+        return get_file_name_without_ext(self._mask_img_file_path)
+    
     
 class ProcessResultItem():
     def __init__(self, img_file_path: str, mask: Mask, data_type=DataType.TRAIN, disk_for_mask=False):
@@ -131,7 +133,9 @@ class ProcessResultItem():
         根据 img_file_path 生成 mask 文件路径。
         例如，将原始文件扩展名替换为 '.mask.pkl'。
         """
-        return str(Path(img_file_path).with_suffix('.mask.pkl'))
+        return str(Path(
+            os.path.join(ROOT_DIR, 'tmp', get_file_name_without_ext(img_file_path)))
+            .with_suffix('.mask.pkl'))
     
     def _save_mask_to_disk(self, mask: 'Mask'):
         """
@@ -161,7 +165,8 @@ class ProcessResultItem():
 
     @property
     def file_name_without_ext(self) -> str:
-        return self._img_file_path.split("/")[-1].split(".")[0]
+        return get_file_name_without_ext(self._img_file_path)
+    
 
     @property
     def img_file_path(self) -> str:
