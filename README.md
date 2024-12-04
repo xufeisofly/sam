@@ -67,7 +67,8 @@ sam MAR20 --merge_mask=0
 Notice: 样例不会对单张图片的 masks 进行合并，如果 masks 过多会导致内存爆炸，为此可使用 low_memory 模式，该模式下 mask 不分配内存，而是通过磁盘进行读写临时文件。代码会在一张图片的 masks 总大小超过 512MB 时自动开启 low_memory
 
 ```
-sam MAR20 --merge_mask=0 --low_memory=1
+# 此情况建议按如下参数运行
+sam MAR20 --merge_mask=0 --low_memory=1 --chunk=1
 ```
 
 show-box 可以展示图片中框的位置，用于查看分割效果
