@@ -19,22 +19,27 @@ from typing import List
 class SamProcessService():
     def __init__(self, ori_label_2_id_map: dict, use_gpu: False, parallel_num=0, gpu_ids=None) -> None:
         self._ori_label_2_id_map = ori_label_2_id_map
+        self._gpu_ids = [] if gpu_ids is None else gpu_ids
         num_gpus = 0
         if use_gpu:
             num_gpus = torch.cuda.device_count()
             if num_gpus == 0:
                 raise RuntimeError("No GPUs available, but 'use_gpu' is set to True")
-            logger.info(f"Detected {num_gpus} GPUs")
-            
+            if not self._gpu_ids:
+                gpu_ids_str = 'all'
+            else:
+                gpu_ids_str = ", ".join(str(gpu_id) for gpu_id in self._gpu_ids)
+            logger.info(f"Detected {num_gpus} GPUs, using {gpu_ids_str}")
+        
         if parallel_num == 0: 
             if num_gpus > 0:
-                parallel_num = num_gpus
+                parallel_num = num_gpus if not self._gpu_ids else len(self._gpu_ids)
             else:
                 parallel_num = 1
         self._num_gpus = num_gpus
         self._use_gpu = use_gpu
         self._parallel_num = parallel_num
-        self._gpu_ids = [] if gpu_ids is None else gpu_ids
+        
         
         if len(self._gpu_ids) > 0 and not use_gpu:
             raise ValueError("GPU IDs are specified but 'use_gpu' is set to False")
