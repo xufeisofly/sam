@@ -184,11 +184,6 @@ class SamProcessService():
     
     def _get_if_use_disk_for_mask(self, image_nbytes, box_items_number, merge_mask=True):
         disk_for_mask = self._low_memory
-        # if not disk_for_mask and merge_mask:
-        #     mask_nbytes = image_nbytes / 3
-        #     ball_park_size = mask_nbytes * len(box_items_number)
-        #     if ball_park_size > MAX_MASKS_MEMORY_SIZE_PER_IMG:
-        #         disk_for_mask = True
         return disk_for_mask
 
 
