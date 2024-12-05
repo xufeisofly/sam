@@ -101,7 +101,7 @@ def main():
             
             logger.info(f"==== 处理并保存 Masks 成功 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
             offset += chunk
-        except BaseException as e:            
+        except Exception as e:            
             logger.error(f"==== 处理并保存 Masks 失败 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
             process_failure(args.dataset, e, offset, chunk, classify_dict)
             offset += chunk

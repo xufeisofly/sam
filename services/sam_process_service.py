@@ -137,7 +137,7 @@ class SamProcessService():
         predictor.set_image(image)
 
         ret = []
-        mask = None
+        mask = Mask(item.img_file_path)
         
         disk_for_mask = self._get_if_use_disk_for_mask(image.nbytes, len(item.box_items), merge_mask)                    
         logger.debug(f"disk_for_mask: {disk_for_mask}")
@@ -154,10 +154,7 @@ class SamProcessService():
             box_item.set_id(id)
             box_item.set_confidence_value(score)
             if merge_mask:
-                if mask is None:
-                    mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
-                else:
-                    mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
+                mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
