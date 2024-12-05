@@ -90,10 +90,10 @@ class SamProcessService():
         return result
     
     
-    def get_result_without_mask(self, data: PreprocessResult) -> ProcessResult:
+    def get_result_without_mask(self, data: PreprocessResult, merge_mask=True) -> ProcessResult:
         result = ProcessResult()
         for item in data.result_list:
-            result_items = self._call_one_no_mask(item) 
+            result_items = self._call_one_no_mask(item, merge_mask=merge_mask) 
             for result_item in result_items:
                 result.append(result_item)
             
@@ -111,12 +111,17 @@ class SamProcessService():
     
     
     
-    def _call_one_no_mask(self, item: PreprocessResultItem) -> List[ProcessResultItem]:
-        mask = Mask(item.img_file_path, data=None, id=-1, box_items=None)
+    def _call_one_no_mask(self, item: PreprocessResultItem, merge_mask=True) -> List[ProcessResultItem]:
+        ret = []
+        mask = None
         for box_item in item.box_items:
             id = self._ori_label_2_id_map[box_item.ori_label]
             box_item.set_id(id)
-            mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
+
+            if mask is None:
+                mask = Mask(item.img_file_path, None, id, box_items=[box_item])
+            else:
+                mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
 
         return [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
     
@@ -137,7 +142,7 @@ class SamProcessService():
         predictor.set_image(image)
 
         ret = []
-        mask = Mask(item.img_file_path)
+        mask = None
         
         disk_for_mask = self._get_if_use_disk_for_mask(image.nbytes, len(item.box_items), merge_mask)                    
         logger.debug(f"disk_for_mask: {disk_for_mask}")
@@ -154,7 +159,10 @@ class SamProcessService():
             box_item.set_id(id)
             box_item.set_confidence_value(score)
             if merge_mask:
-                mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
+                if mask is None:
+                    mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
+                else:
+                    mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
             else:
                 ext = item.img_file_path.split("/")[-1].split(".")[1]
                 mask_img_file_path = item.img_file_path.replace(f".{ext}", f"_{box_item.box_string()}_{box_item.ori_label}.{ext}")
