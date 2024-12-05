@@ -90,10 +90,10 @@ class SamProcessService():
         return result
     
     
-    def get_result_without_mask(self, data: PreprocessResult, merge_mask=True) -> ProcessResult:
+    def get_result_without_mask(self, data: PreprocessResult) -> ProcessResult:
         result = ProcessResult()
         for item in data.result_list:
-            result_items = self._call_one_no_mask(item, merge_mask=merge_mask) 
+            result_items = self._call_one_no_mask(item) 
             for result_item in result_items:
                 result.append(result_item)
             
@@ -111,17 +111,13 @@ class SamProcessService():
     
     
     
-    def _call_one_no_mask(self, item: PreprocessResultItem, merge_mask=True) -> List[ProcessResultItem]:
+    def _call_one_no_mask(self, item: PreprocessResultItem) -> List[ProcessResultItem]:
         ret = []
-        mask = None
+        mask = Mask(item.img_file_path, None, -1, box_items=None)
         for box_item in item.box_items:
             id = self._ori_label_2_id_map[box_item.ori_label]
             box_item.set_id(id)
-
-            if mask is None:
-                mask = Mask(item.img_file_path, None, id, box_items=[box_item])
-            else:
-                mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
+            mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
 
         return [ProcessResultItem(img_file_path=item.img_file_path, mask=mask, data_type=item.data_type)]
     

@@ -22,8 +22,6 @@ class Mask():
         """
         if data is not None and data.ndim != 2:
             raise ValueError("data must be a 2D numpy array")
-        if id <= 0:
-            raise ValueError("id must be greater than zero")
         if data is not None:
             self._data = data.astype(int) * id
         else:
@@ -31,9 +29,9 @@ class Mask():
         self._count = 1
         self._img_file_path = img_file_path
         self._mask_img_file_path = mask_img_file_path if mask_img_file_path is not None else img_file_path
-        self._id_count_map = {
-            id: 1,
-        }
+        self._id_count_map = {}
+        if id >= 0:
+            self._id_count_map[id] = 1
         self._box_items = box_items if box_items is not None else []
 
 

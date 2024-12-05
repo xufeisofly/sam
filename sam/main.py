@@ -77,7 +77,7 @@ def main():
         low_memory=bool(args.low_memory))
     output_service = OutputService(args.dataset)
     output_service.clear_output()
-    process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))
+    process_result_without_masks = processor.get_result_without_mask(preprocess_result)
     
     classified_process_result, classify_dict = output_service.classify_result(process_result_without_masks)
     output_service.save_rest(classified_process_result, preprocessor.ori_label_2_id_map())
