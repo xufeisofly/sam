@@ -4,6 +4,7 @@ import sys
 import logging
 import json
 import os
+import traceback
 
 from services.base_preprocess_service import PreprocessFactory
 from services.sam_process_service import SamProcessService
@@ -12,7 +13,7 @@ import torch
 from util.logger import init_logging, logger, loglevel, set_loglevel
 
 
-def process_failure(dataset, e: Exception, offset, chunk, classify_dict):
+def process_failure(dataset, e: Exception, offset, chunk, classify_dict, err_stack):
     file = dataset + "_fail.json"
     
     if os.path.exists(file) and os.path.getsize(file) > 0:
@@ -30,6 +31,7 @@ def process_failure(dataset, e: Exception, offset, chunk, classify_dict):
         "offset": offset,
         "chunk": chunk,
         "error": str(e),
+        "stack": err_stack,
     })
     
     info = {
@@ -77,7 +79,7 @@ def main():
         low_memory=bool(args.low_memory))
     output_service = OutputService(args.dataset)
     output_service.clear_output()
-    process_result_without_masks = processor.get_result_without_mask(preprocess_result)
+    process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))
     
     classified_process_result, classify_dict = output_service.classify_result(process_result_without_masks)
     output_service.save_rest(classified_process_result, preprocessor.ori_label_2_id_map())
@@ -101,9 +103,9 @@ def main():
             
             logger.info(f"==== 处理并保存 Masks 成功 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
             offset += chunk
-        except Exception as e:            
+        except BaseException as e:            
             logger.error(f"==== 处理并保存 Masks 失败 {offset}/{total}->{offset+chunk}/{total} {args.dataset}")
-            process_failure(args.dataset, e, offset, chunk, classify_dict)
+            process_failure(args.dataset, e, offset, chunk, classify_dict, traceback.format_exc())
             offset += chunk
             continue
             
