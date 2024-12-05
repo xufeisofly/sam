@@ -9,7 +9,7 @@ import warnings
 
 from segment_anything import sam_model_registry, SamPredictor
 from schemas.preprocess_result import PreprocessResult, PreprocessResultItem
-from schemas.process_result import Mask, ProcessResultItem, ProcessResult, Mask
+from schemas.process_result import Mask, ProcessResult, ProcessResultItem
 from util.constant import CHECKPOINT_DIR
 from util.logger import logger, init_logging
 from concurrent.futures import ProcessPoolExecutor
@@ -113,12 +113,12 @@ class SamProcessService():
     
     def _call_one_no_mask(self, item: PreprocessResultItem, merge_mask=True) -> List[ProcessResultItem]:
         ret = []
-        mask = None
+        mask = Mask.EMPTY
         for box_item in item.box_items:
             id = self._ori_label_2_id_map[box_item.ori_label]
             box_item.set_id(id)
 
-            if mask is None:
+            if mask is Mask.EMPTY:
                 mask = Mask(item.img_file_path, None, id, box_items=[box_item])
             else:
                 mask.update(Mask(item.img_file_path, None, id, box_items=[box_item]))
@@ -142,7 +142,7 @@ class SamProcessService():
         predictor.set_image(image)
 
         ret = []
-        mask = None
+        mask = Mask.EMPTY
         
         disk_for_mask = self._get_if_use_disk_for_mask(image.nbytes, len(item.box_items), merge_mask)                    
         logger.debug(f"disk_for_mask: {disk_for_mask}")
@@ -159,7 +159,7 @@ class SamProcessService():
             box_item.set_id(id)
             box_item.set_confidence_value(score)
             if merge_mask:
-                if mask is None:
+                if mask is Mask.EMPTY:
                     mask = Mask(item.img_file_path, mask_arr, id, box_items=[box_item])
                 else:
                     mask.update(Mask(item.img_file_path, mask_arr, id, box_items=[box_item]))
