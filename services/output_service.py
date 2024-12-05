@@ -168,6 +168,8 @@ class OutputService():
             json.dump(ori_label_2_id_map, f, indent=4)
         
     def _save_mask_result_item_tif(self, result_item: ProcessResultItem, dir):
+        if result_item.mask is Mask.EMPTY:
+            return
         image = Image.fromarray(result_item.mask.data)
         file = os.path.join(dir, result_item.mask.mask_file_name_without_ext + ".tif")
         image.save(file)
