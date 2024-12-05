@@ -119,6 +119,8 @@ Mask.EMPTY = Mask()
     
 class ProcessResultItem():
     def __init__(self, img_file_path: str, mask: Mask=Mask.EMPTY, data_type=DataType.TRAIN, disk_for_mask=False):
+        if mask is None:
+            raise ValueError('mask cannot be None')
         self._img_file_path = img_file_path
         if not disk_for_mask:
             self._mask = mask
