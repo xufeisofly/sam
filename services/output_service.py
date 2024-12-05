@@ -51,6 +51,64 @@ class OutputService():
         #     for f in os.listdir(folder):
         #         os.remove(os.path.join(folder, f))
 
+    def fix_detection_data(self, data: ProcessResult, ori_label_2_id_map: dict):
+        self._output_ann_dir = os.path.join(self._output_dir, "ann_dir")
+        self._output_img_dir = os.path.join(self._output_dir, "img_dir")
+
+        self._train_ann_dir = os.path.join(self._output_ann_dir, "train")
+        self._val_ann_dir = os.path.join(self._output_ann_dir, "val")
+        self._test_ann_dir = os.path.join(self._output_ann_dir, "test")
+        self._train_img_dir = os.path.join(self._output_img_dir, "train")
+        self._val_img_dir = os.path.join(self._output_img_dir, "val")
+        self._test_img_dir = os.path.join(self._output_img_dir, "test")
+        self._origin_data_dir = os.path.join(self._output_dir, "origin_data")
+        
+        self._detection_dir = os.path.join(self._output_dir, "detection_data")
+        self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
+        classify_dict, num_arr = self._get_classify_dict()
+        classified_process_result = self.classify_result_by_dict(data, classify_dict)
+        
+        
+        self.save_detection_data(classified_process_result, ori_label_2_id_map)
+        
+        detect_train_file = os.path.join(self._detection_ann_dir, "train.json")
+        detect_val_file = os.path.join(self._detection_ann_dir, "val.json")
+        detect_test_file = os.path.join(self._detection_ann_dir, "test.json")
+        for i, file in enumerate([detect_train_file, detect_val_file, detect_test_file]):
+            if os.path.exists(file):
+                with open(file, 'r') as f:    
+                    data = json.load(f)
+                    annotations = data['annotations']
+                    if len(annotations) != num_arr[i]:
+                        raise ValueError(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
+        
+        print("Check successful!")
+        
+        
+        
+    def _get_classify_dict(self):
+        train_file = os.path.join(self._output_ann_dir, "train.json")
+        val_file = os.path.join(self._output_ann_dir, "val.json")
+        test_file = os.path.join(self._output_ann_dir, "test.json")
+        
+        classify_dict = {}
+        num_arr = [0, 0, 0]
+        for i, file in enumerate([train_file, val_file, test_file]):
+            if os.path.exists(file):
+                with open(file, 'r') as f:
+                    data = json.load(f)
+                    annotations = data['annotations']
+                    num_arr[i] = len(annotations)
+                    for anno in annotations:
+                        image_path = anno['image']
+                        data_type_str = image_path.split('/')[0]
+                        file_name_without_ext = image_path.split('/')[1].split('.')[0]
+                        if not classify_dict.get(file_name_without_ext):
+                            classify_dict[file_name_without_ext] = data_type_str
+                            
+        return classify_dict, num_arr
+
+        
 
     def save_rest(self, data: ProcessResult, ori_label_2_id_map: dict):
         # 保存语义分割数据
