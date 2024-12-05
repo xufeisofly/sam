@@ -16,7 +16,7 @@ from util.file import get_file_name_without_ext
 
 
 class Mask():
-    def __init__(self, img_file_path: str, data: np.ndarray, id: int=-1, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
+    def __init__(self, img_file_path: str='', data: np.ndarray=None, id: int=-1, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
         """
         data: np.array([], dtype=np.boolean)
         """
@@ -112,9 +112,12 @@ class Mask():
     def mask_file_name_without_ext(self) -> str:
         return get_file_name_without_ext(self._mask_img_file_path)
     
+
+EmptyMask = Mask()
+
     
 class ProcessResultItem():
-    def __init__(self, img_file_path: str, mask: Mask=None, data_type=DataType.TRAIN, disk_for_mask=False):
+    def __init__(self, img_file_path: str, mask: Mask=EmptyMask, data_type=DataType.TRAIN, disk_for_mask=False):
         self._img_file_path = img_file_path
         if not disk_for_mask:
             self._mask = mask
@@ -192,8 +195,6 @@ class ProcessResultItem():
         return self._data_type
     
     def get_id_count_map(self) -> dict:
-        if not self.mask:
-            return {}
         return self.mask.get_id_count_map()
     
     def get_ids(self) -> List[int]:
