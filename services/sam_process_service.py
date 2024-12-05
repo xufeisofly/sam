@@ -112,8 +112,7 @@ class SamProcessService():
     
     
     def _call_one_no_mask(self, item: PreprocessResultItem) -> List[ProcessResultItem]:
-        ret = []
-        mask = Mask(item.img_file_path, None, -1, box_items=None)
+        mask = Mask(item.img_file_path, data=None, id=-1, box_items=None)
         for box_item in item.box_items:
             id = self._ori_label_2_id_map[box_item.ori_label]
             box_item.set_id(id)
