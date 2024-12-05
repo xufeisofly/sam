@@ -16,7 +16,7 @@ from util.file import get_file_name_without_ext
 
 
 class Mask():
-    def __init__(self, img_file_path: str, data: np.ndarray, id: int, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
+    def __init__(self, img_file_path: str, data: np.ndarray=None, id: int=-1, box_items: List[BoxItem]=None, mask_img_file_path: str=None) -> None:
         """
         data: np.array([], dtype=np.boolean)
         """
