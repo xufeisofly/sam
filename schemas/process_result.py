@@ -40,6 +40,14 @@ class Mask():
     def update(self, mask: Mask) -> None:
         """合并两个 Mask
         """
+        self._count += 1
+        for k, v in mask.get_id_count_map().items():
+            if k in self._id_count_map:
+                self._id_count_map[k] += v
+            else:
+                self._id_count_map[k] = v
+        self._box_items.extend(mask.box_items)
+        
         if mask.data is None and self._data is None:
             return
         
@@ -68,13 +76,7 @@ class Mask():
             # logger.debug(f"No overlapped")
         
         # self._data = np.where(self._data > mask.data, self._data, mask.data)
-        self._count += 1
-        for k, v in mask.get_id_count_map().items():
-            if k in self._id_count_map:
-                self._id_count_map[k] += v
-            else:
-                self._id_count_map[k] = v
-        self._box_items.extend(mask.box_items)
+
         
         
     @property
