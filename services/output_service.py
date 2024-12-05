@@ -96,10 +96,7 @@ class OutputService():
                 with open(file, 'r') as f:    
                     data = json.load(f)
                     annotations = data['annotations']
-                    if len(annotations) != num_arr[i]:
-                        print(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
-        
-        print("Check successful!")
+                    print(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
     
         
     def _get_classify_dict(self):
