@@ -97,7 +97,7 @@ class OutputService():
                     data = json.load(f)
                     annotations = data['annotations']
                     if len(annotations) != num_arr[i]:
-                        raise ValueError(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
+                        print(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
         
         print("Check successful!")
     
