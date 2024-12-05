@@ -18,8 +18,8 @@ class OutputService():
         self._dataset_name = dataset_name
         self._output_dir = os.path.join(OUTPUT_DIR, self._dataset_name)
         os.makedirs(self._output_dir, exist_ok=True)
-
-    def build_output(self):
+        
+    def init_folder(self):
         self._output_ann_dir = os.path.join(self._output_dir, "ann_dir")
         self._output_img_dir = os.path.join(self._output_dir, "img_dir")
 
@@ -33,6 +33,9 @@ class OutputService():
         
         self._detection_dir = os.path.join(self._output_dir, "detection_data")
         self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
+
+    def build_output(self):
+        self.init_folder()
         
         for folder in [self._output_dir, self._output_ann_dir, self._output_img_dir, self._train_ann_dir,
                        self._val_ann_dir, self._test_ann_dir,
@@ -52,19 +55,7 @@ class OutputService():
         #         os.remove(os.path.join(folder, f))
 
     def fix_detection_data(self, data: ProcessResult, ori_label_2_id_map: dict):
-        self._output_ann_dir = os.path.join(self._output_dir, "ann_dir")
-        self._output_img_dir = os.path.join(self._output_dir, "img_dir")
-
-        self._train_ann_dir = os.path.join(self._output_ann_dir, "train")
-        self._val_ann_dir = os.path.join(self._output_ann_dir, "val")
-        self._test_ann_dir = os.path.join(self._output_ann_dir, "test")
-        self._train_img_dir = os.path.join(self._output_img_dir, "train")
-        self._val_img_dir = os.path.join(self._output_img_dir, "val")
-        self._test_img_dir = os.path.join(self._output_img_dir, "test")
-        self._origin_data_dir = os.path.join(self._output_dir, "origin_data")
-        
-        self._detection_dir = os.path.join(self._output_dir, "detection_data")
-        self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
+        self.init_folder()
         classify_dict, num_arr = self._get_classify_dict()
         classified_process_result = self.classify_result_by_dict(data, classify_dict)
         
@@ -73,19 +64,7 @@ class OutputService():
         
     
     def check_detection_file(self):
-        self._output_ann_dir = os.path.join(self._output_dir, "ann_dir")
-        self._output_img_dir = os.path.join(self._output_dir, "img_dir")
-
-        self._train_ann_dir = os.path.join(self._output_ann_dir, "train")
-        self._val_ann_dir = os.path.join(self._output_ann_dir, "val")
-        self._test_ann_dir = os.path.join(self._output_ann_dir, "test")
-        self._train_img_dir = os.path.join(self._output_img_dir, "train")
-        self._val_img_dir = os.path.join(self._output_img_dir, "val")
-        self._test_img_dir = os.path.join(self._output_img_dir, "test")
-        self._origin_data_dir = os.path.join(self._output_dir, "origin_data")
-        
-        self._detection_dir = os.path.join(self._output_dir, "detection_data")
-        self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
+        self.init_folder()
         
         _, num_arr = self._get_classify_dict()
         detect_train_file = os.path.join(self._detection_ann_dir, "train.json")
