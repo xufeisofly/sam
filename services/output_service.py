@@ -71,6 +71,23 @@ class OutputService():
         
         self.save_detection_data(classified_process_result, ori_label_2_id_map)
         
+    
+    def check_detection_file(self):
+        self._output_ann_dir = os.path.join(self._output_dir, "ann_dir")
+        self._output_img_dir = os.path.join(self._output_dir, "img_dir")
+
+        self._train_ann_dir = os.path.join(self._output_ann_dir, "train")
+        self._val_ann_dir = os.path.join(self._output_ann_dir, "val")
+        self._test_ann_dir = os.path.join(self._output_ann_dir, "test")
+        self._train_img_dir = os.path.join(self._output_img_dir, "train")
+        self._val_img_dir = os.path.join(self._output_img_dir, "val")
+        self._test_img_dir = os.path.join(self._output_img_dir, "test")
+        self._origin_data_dir = os.path.join(self._output_dir, "origin_data")
+        
+        self._detection_dir = os.path.join(self._output_dir, "detection_data")
+        self._detection_ann_dir = os.path.join(self._detection_dir, "annotations")
+        
+        _, num_arr = self._get_classify_dict()
         detect_train_file = os.path.join(self._detection_ann_dir, "train.json")
         detect_val_file = os.path.join(self._detection_ann_dir, "val.json")
         detect_test_file = os.path.join(self._detection_ann_dir, "test.json")
@@ -83,8 +100,7 @@ class OutputService():
                         raise ValueError(f"The number {i} of annotations is not equal to the number of images. anno: {num_arr[i]}, detect: {len(annotations)}")
         
         print("Check successful!")
-        
-        
+    
         
     def _get_classify_dict(self):
         train_file = os.path.join(self._output_ann_dir, "train.json")

@@ -71,10 +71,20 @@ def main():
     output_service = OutputService(args.dataset)
     process_result_without_masks = processor.get_result_without_mask(preprocess_result, merge_mask=bool(args.merge_mask))
     output_service.fix_detection_data(process_result_without_masks, preprocessor.ori_label_2_id_map())
+    output_service.check_detection_file()
     
     logger.info(f"==== 完成 rest 数据保存 {args.dataset}")
     
     sys.exit(0)
+    
+    
+def check_detection_file():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('dataset', help='数据集名称', default='MAR20', type=str)
+
+    args = parser.parse_args()
+    output_service = OutputService(args.dataset)
+    output_service.check_detection_file()
     
     
 def get_classify_dict(train_json_file_path, val_json_file_path, test_json_file_path):
