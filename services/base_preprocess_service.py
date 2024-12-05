@@ -31,6 +31,12 @@ class PreprocessFactory():
         elif service_name == "HRSC":
             from services.hrsc_preprocess_service import HRSCPreprocessService
             return HRSCPreprocessService(dataset_path=dataset_path)
+        elif service_name == "HRRSD":
+            from services.hrrsd_preprocess_service import HRRSDPreprocessService
+            return HRRSDPreprocessService(dataset_path=dataset_path)
+        elif service_name == "ShipRSImageNet":
+            from services.ShipRSImageNet_preprocess_service import ShipRSImageNetPreprocessService
+            return ShipRSImageNetPreprocessService(dataset_path=dataset_path)
         elif service_name == "SISI":
             from services.sisi_preprocess_service import SISIPreprocessService
             return SISIPreprocessService(dataset_path=dataset_path)
