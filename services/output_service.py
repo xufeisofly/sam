@@ -161,6 +161,7 @@ class OutputService():
         expected_id_count = self.get_val_expected_id_count_map(result)
         val_is_enough = False
         # 打乱顺序，以便于后续的验证集采样
+        random.seed(42)
         random.shuffle(result.train_result_list)
         for result_item in result.train_result_list:
             if not val_is_enough:
