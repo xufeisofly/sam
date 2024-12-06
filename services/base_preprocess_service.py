@@ -49,5 +49,8 @@ class PreprocessFactory():
         elif service_name == "xView":
             from services.xview_preprocess_service import xViewPreprocessService
             return xViewPreprocessService(dataset_path=dataset_path)
+        elif service_name == "Airplane":
+            from services.airplane_preprocess_service import AirplanePreprocessService
+            return AirplanePreprocessService(dataset_path=dataset_path)
         else:
             raise ValueError("Invalid service name")
