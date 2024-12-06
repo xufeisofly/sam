@@ -90,6 +90,9 @@ class Mask():
             return None
         return self._data.astype(np.uint8)
     
+    def has_data(self) -> bool:
+        return self.data is not None
+    
     @property
     def box_items(self) -> List[BoxItem]:
         return self._box_items
