@@ -162,7 +162,7 @@ class OutputService():
         val_is_enough = False
         # 打乱顺序，以便于后续的验证集采样
         random.seed(42)
-        random.shuffle(result.train_result_list)
+        random.shuffle(result.train_result_list)    
         for result_item in result.train_result_list:
             if not val_is_enough:
                 val_result.append(result_item)
@@ -219,7 +219,7 @@ class OutputService():
             json.dump(ori_label_2_id_map, f, indent=4)
         
     def _save_mask_result_item_tif(self, result_item: ProcessResultItem, dir):
-        if result_item.mask is Mask.EMPTY:
+        if result_item.mask is Mask.EMPTY or not result_item.mask.has_data():
             return
         image = Image.fromarray(result_item.mask.data)
         file = os.path.join(dir, result_item.mask.mask_file_name_without_ext + ".tif")
