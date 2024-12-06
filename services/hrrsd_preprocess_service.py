@@ -62,7 +62,6 @@ class HRRSDPreprocessService(BasePreprocessService):
             'T junction': 245,
             'tennis court': 243,
             'vehicle': 242,
-            'Mean AP': 241,
         }
 
    
