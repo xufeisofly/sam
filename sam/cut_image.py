@@ -7,12 +7,8 @@ import os
 import numpy as np
 from PIL import Image
 
-from util.file import get_file_name_without_ext
-
-from services.base_preprocess_service import PreprocessFactory
-from services.sam_process_service import SamProcessService
-from services.output_service import OutputService
-from util.logger import init_logging, logger, loglevel, set_loglevel
+def get_file_name_without_ext(file_path: str) -> str:
+    return file_path.split("/")[-1].split(".")[0]
 
 def get_all_files(folder_path):
     # 使用递归匹配所有文件
@@ -33,7 +29,7 @@ def cut_dataset(dataset_path):
             all_files = get_all_files(sub_folder_path)
             for idx, file in enumerate(all_files):
                 cut_image(file, sub_output_folder)
-                logger.info(f"==== 切片完成 {idx}/{len(all_files)}")
+                print(f"==== 切片完成 {idx}/{len(all_files)}")
                 
             
 def slice_image(image, a, overlap=256):
@@ -97,10 +93,9 @@ def main():
     
     cut_dataset(args.dataset_path)
     
-    logger.info(f"==== 完成 {args.dataset_path}")
+    print(f"==== 完成 {args.dataset_path}")
     
     sys.exit(0)
-    
     
     
 
