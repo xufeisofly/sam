@@ -71,7 +71,6 @@ def save_slices_as_tif(slices, file_name, output_folder="output"):
         # 构造文件名，例如：file_name_0.tif, file_name_1.tif, ...
         output_path = os.path.join(output_folder, f"{file_name}_{idx}.tif")
         slice_image.save(output_path)
-        print(f"Saved: {output_path}")
         
     
 def cut_image(file, output_folder):
