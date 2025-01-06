@@ -9,7 +9,8 @@ setup(
             'show-box = sam.show_box:show_box',
             'list-gpu-ids = sam.main:list_gpu_ids',
             'fix-detection-file = sam.fix_detection_file:main',
-            'check-detection-file = sam.fix_detection_file:check_detection_file'
+            'check-detection-file = sam.fix_detection_file:check_detection_file',
+            'cut-image = sam.cut_image:main'
         ]
     },
     packages=find_packages(),
