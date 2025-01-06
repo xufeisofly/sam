@@ -31,8 +31,9 @@ def cut_dataset(dataset_path):
             os.makedirs(sub_output_folder, exist_ok=True)
             sub_folder_path = os.path.join(img_dir, sub_folder)
             all_files = get_all_files(sub_folder_path)
-            for file in all_files:
+            for idx, file in enumerate(all_files):
                 cut_image(file, sub_output_folder)
+                logger.info(f"==== 切片完成 {idx}/{len(all_files)}")
                 
             
 def slice_image(image, a, overlap=256):
@@ -96,7 +97,7 @@ def main():
     
     cut_dataset(args.dataset_path)
     
-    logger.info(f"==== 完成")
+    logger.info(f"==== 完成 {args.dataset_path}")
     
     sys.exit(0)
     
