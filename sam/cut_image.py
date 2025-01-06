@@ -16,7 +16,8 @@ def get_all_files(folder_path):
 
 
 def cut_dataset(dataset_path):
-    output_root = os.path.join(dataset_path, 'cut')
+    output_folder_name = dataset_path.split("/")[-1] + "_cut"
+    output_root = os.path.join(dataset_path, output_folder_name)
     os.makedirs(output_root, exist_ok=True)
     for dir in ['img_dir', 'ann_dir']:
         output_folder = os.path.join(output_root, dir)
